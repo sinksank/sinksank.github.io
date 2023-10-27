@@ -331,60 +331,6 @@ return 0;
       </tags>
   </entry>
   <entry>
-    <title>第四周</title>
-    <url>/2023/10/10/%E7%AC%AC%E5%9B%9B%E5%91%A8/</url>
-    <content><![CDATA[<p>void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n) {<br>    int i &#x3D; m - 1;  &#x2F;&#x2F; 初始化指针 i，指向 nums1 的末尾<br>    int j &#x3D; n - 1;  &#x2F;&#x2F; 初始化指针 j，指向 nums2 的末尾<br>    int k &#x3D; m + n - 1;  &#x2F;&#x2F; 初始化指针 k，指向合并后的数组的末尾</p>
-<pre><code>// 从后向前合并两个数组
-while (i &gt;= 0 &amp;&amp; j &gt;= 0) &#123;
-    if (nums1[i] &gt;= nums2[j]) &#123;
-        nums1[k] = nums1[i];
-        i--;
-    &#125; else &#123;
-        nums1[k] = nums2[j];
-        j--;
-    &#125;
-    k--;
-&#125;
-
-// 处理 nums2 中剩余的元素
-while (j &gt;= 0) &#123;
-    nums1[k] = nums2[j];
-    j--;
-    k--;
-&#125;
-</code></pre>
-<p>}<br>int removeDuplicates(int* nums, int numsSize){<br>    if (numsSize &lt;&#x3D; 2) {<br>        return numsSize;<br>    }</p>
-<pre><code>int j = 2; // j用来记录不重复元素的位置
-
-for (int i = 2; i &lt; numsSize; i++) &#123;
-    if (nums[i] != nums[j - 2]) &#123;
-        nums[j] = nums[i];
-        j++;
-    &#125;
-&#125;
-
-return j;
-</code></pre>
-<p>}</p>
-<p>int removeDuplicates(int* nums, int numsSize){<br>    if (numsSize &lt;&#x3D; 2) {<br>        return numsSize;<br>    }</p>
-<pre><code>int j = 2; // j用来记录不重复元素的位置
-
-for (int i = 2; i &lt; numsSize; i++) &#123;
-    if (nums[i] != nums[j - 2]) &#123;
-        nums[j] = nums[i];
-        j++;
-    &#125;
-&#125;
-
-return j;
-</code></pre>
-<p>}</p>
-]]></content>
-      <tags>
-        <tag>开发</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>第六周</title>
     <url>/2023/10/22/%E7%AC%AC%E5%85%AD%E5%91%A8/</url>
     <content><![CDATA[<p>贪心算法<br>取第一步后不断置换<br>int maxProfit(int* prices, int pricesSize) {<br>    if (pricesSize &lt;&#x3D; 0) {<br>        return 0;<br>    }</p>
@@ -437,6 +383,60 @@ for (int i = 0; i &lt; n; i++) &#123;
 return dp[n - 1];
 </code></pre>
 <p>}</p>
+<p>}</p>
+]]></content>
+      <tags>
+        <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第四周</title>
+    <url>/2023/10/10/%E7%AC%AC%E5%9B%9B%E5%91%A8/</url>
+    <content><![CDATA[<p>void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n) {<br>    int i &#x3D; m - 1;  &#x2F;&#x2F; 初始化指针 i，指向 nums1 的末尾<br>    int j &#x3D; n - 1;  &#x2F;&#x2F; 初始化指针 j，指向 nums2 的末尾<br>    int k &#x3D; m + n - 1;  &#x2F;&#x2F; 初始化指针 k，指向合并后的数组的末尾</p>
+<pre><code>// 从后向前合并两个数组
+while (i &gt;= 0 &amp;&amp; j &gt;= 0) &#123;
+    if (nums1[i] &gt;= nums2[j]) &#123;
+        nums1[k] = nums1[i];
+        i--;
+    &#125; else &#123;
+        nums1[k] = nums2[j];
+        j--;
+    &#125;
+    k--;
+&#125;
+
+// 处理 nums2 中剩余的元素
+while (j &gt;= 0) &#123;
+    nums1[k] = nums2[j];
+    j--;
+    k--;
+&#125;
+</code></pre>
+<p>}<br>int removeDuplicates(int* nums, int numsSize){<br>    if (numsSize &lt;&#x3D; 2) {<br>        return numsSize;<br>    }</p>
+<pre><code>int j = 2; // j用来记录不重复元素的位置
+
+for (int i = 2; i &lt; numsSize; i++) &#123;
+    if (nums[i] != nums[j - 2]) &#123;
+        nums[j] = nums[i];
+        j++;
+    &#125;
+&#125;
+
+return j;
+</code></pre>
+<p>}</p>
+<p>int removeDuplicates(int* nums, int numsSize){<br>    if (numsSize &lt;&#x3D; 2) {<br>        return numsSize;<br>    }</p>
+<pre><code>int j = 2; // j用来记录不重复元素的位置
+
+for (int i = 2; i &lt; numsSize; i++) &#123;
+    if (nums[i] != nums[j - 2]) &#123;
+        nums[j] = nums[i];
+        j++;
+    &#125;
+&#125;
+
+return j;
+</code></pre>
 <p>}</p>
 ]]></content>
       <tags>
