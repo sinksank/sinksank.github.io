@@ -229,6 +229,15 @@
       </tags>
   </entry>
   <entry>
+    <title>堆</title>
+    <url>/2023/08/09/%E5%A0%86/</url>
+    <content><![CDATA[<p>堆:<br>在程序执行的过程中，由malloc申请的内存空间被称作chunk,而当程序申请的chunk被free时会被加入到相应的空闲管理列表(bin)中。<br>size_t:<br>在32位系统上是32位无符号整数(4bytes)，在64位系统上是64位无符号整数(8bytes)<br>pre_size:<br>前一个chunk块的大小，如果chunk_size的P位为1则pre_size无效，上个chunk可以使用pre_size的空间。（前一个chunk块的大小，指的是低地址的chunk）<br>size:<br>当前chunk的大小，chunk的大小必须是2<em>SIZE_SZ（size_t）的整数倍，如果不满足会被强制转换为2</em>SIZE_SZ的整数倍。<br>fd、bk指针:<br>chunk被分配后从fd开始是用户的数据，chunk未被分配时，fd指向前一个空闲chunk（指链表中的前一个，物理地址可能不相邻），bk指向后一个空闲chunk。<br>fd_nextsize:<br>指向前一个与当前chunk大小不同的第一个空闲块，不包含 bin 的头指针。<br>bk_nextsize:<br>指向后一个与当前 chunk 大小不同的第一个空闲块，不包含 bin 的头指针。（fd_nextsize和bk_nextsize只有在large chunk时才需要考虑）<br>mem:<br>指的是用户数据的首地址，与chunk中间差了一个chunk header（也就是PREV_SIZE和SIZE，大小是2*SIZE_SZ）<br>Bin:<br>用户释放掉的 chunk 不会马上归还给系统，ptmalloc会统一管理 heap 和 mmap 映射区域中的空闲的chunk。在具体的实现中，ptmalloc 采用分箱式方法对空闲的chunk 进行管理。ptmalloc把空闲的堆分成四种，分别是fast bins，small bins，large bins，unsorted bin<br>相似大小的 chunk 会用双向链表链接起来。<br>fastbins:<br>glibc以单链表结构对其进行管理，且每个bin采取的是LIFO（后进先出，跟栈类似）的策略，即最近释放的chunk会被优先分配，同时fastbin中的chunk的P位设为1，不会进行合并操作。fastbin大小（注：以下的大小都为mem的大小，实际chunk的空间还要加上chunk_head（64位为16字节，32位为8字节）<br>Unsorted bins:<br>如果free的chunk块不在fastbins范围内，就会被乱序存放在unsorted bins内，即是未排序的bin，而Unsortedbins的作用是视作空闲 chunk 回归其所属（larg&#x2F;small) bin 之前的缓冲区。当用户申请(malloc)一个大于fastbin的chunk时，首先会遍历unsorted bin中的chunk，找到合适的chunk，这时再将其他不满足的chunk保存到small bin和large bin中也是顺便的事情。<br>small bin:<br>从16到504字节(64位系统的话是从32字节到1008字节)<br>Large bin:<br>在这63个large bins中，前32个large bin依次以64字节步长为间隔，即第一个large bin中chunk size为512~575字节，第二个large bin中chunk size为576 ~ 639字节。紧随其后的16个large bin依次以512字节步长为间隔；之后的8个bin以步长4096为间隔；再之后的4个bin以32768字节为间隔；之后的2个bin以262144字节为间隔；剩下的chunk就放在最后一个large bin中。如下表所示。</p>
+]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>二进制文件</title>
     <url>/2023/06/19/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6/</url>
     <content><![CDATA[<p>一、编译原理<br>1.编译器<br>编译器简单理解就是将一种语言（源语言）转换为等价的另一种语言（目标语言）的程序。</p>
@@ -264,15 +273,6 @@
       <categories>
         <category>pwn</category>
       </categories>
-      <tags>
-        <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>堆</title>
-    <url>/2023/08/09/%E5%A0%86/</url>
-    <content><![CDATA[<p>堆:<br>在程序执行的过程中，由malloc申请的内存空间被称作chunk,而当程序申请的chunk被free时会被加入到相应的空闲管理列表(bin)中。<br>size_t:<br>在32位系统上是32位无符号整数(4bytes)，在64位系统上是64位无符号整数(8bytes)<br>pre_size:<br>前一个chunk块的大小，如果chunk_size的P位为1则pre_size无效，上个chunk可以使用pre_size的空间。（前一个chunk块的大小，指的是低地址的chunk）<br>size:<br>当前chunk的大小，chunk的大小必须是2<em>SIZE_SZ（size_t）的整数倍，如果不满足会被强制转换为2</em>SIZE_SZ的整数倍。<br>fd、bk指针:<br>chunk被分配后从fd开始是用户的数据，chunk未被分配时，fd指向前一个空闲chunk（指链表中的前一个，物理地址可能不相邻），bk指向后一个空闲chunk。<br>fd_nextsize:<br>指向前一个与当前chunk大小不同的第一个空闲块，不包含 bin 的头指针。<br>bk_nextsize:<br>指向后一个与当前 chunk 大小不同的第一个空闲块，不包含 bin 的头指针。（fd_nextsize和bk_nextsize只有在large chunk时才需要考虑）<br>mem:<br>指的是用户数据的首地址，与chunk中间差了一个chunk header（也就是PREV_SIZE和SIZE，大小是2*SIZE_SZ）<br>Bin:<br>用户释放掉的 chunk 不会马上归还给系统，ptmalloc会统一管理 heap 和 mmap 映射区域中的空闲的chunk。在具体的实现中，ptmalloc 采用分箱式方法对空闲的chunk 进行管理。ptmalloc把空闲的堆分成四种，分别是fast bins，small bins，large bins，unsorted bin<br>相似大小的 chunk 会用双向链表链接起来。<br>fastbins:<br>glibc以单链表结构对其进行管理，且每个bin采取的是LIFO（后进先出，跟栈类似）的策略，即最近释放的chunk会被优先分配，同时fastbin中的chunk的P位设为1，不会进行合并操作。fastbin大小（注：以下的大小都为mem的大小，实际chunk的空间还要加上chunk_head（64位为16字节，32位为8字节）<br>Unsorted bins:<br>如果free的chunk块不在fastbins范围内，就会被乱序存放在unsorted bins内，即是未排序的bin，而Unsortedbins的作用是视作空闲 chunk 回归其所属（larg&#x2F;small) bin 之前的缓冲区。当用户申请(malloc)一个大于fastbin的chunk时，首先会遍历unsorted bin中的chunk，找到合适的chunk，这时再将其他不满足的chunk保存到small bin和large bin中也是顺便的事情。<br>small bin:<br>从16到504字节(64位系统的话是从32字节到1008字节)<br>Large bin:<br>在这63个large bins中，前32个large bin依次以64字节步长为间隔，即第一个large bin中chunk size为512~575字节，第二个large bin中chunk size为576 ~ 639字节。紧随其后的16个large bin依次以512字节步长为间隔；之后的8个bin以步长4096为间隔；再之后的4个bin以32768字节为间隔；之后的2个bin以262144字节为间隔；剩下的chunk就放在最后一个large bin中。如下表所示。</p>
-]]></content>
       <tags>
         <tag>pwn</tag>
       </tags>
