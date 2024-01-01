@@ -134,15 +134,6 @@
       </tags>
   </entry>
   <entry>
-    <title>maven使用心得</title>
-    <url>/2023/07/08/maven%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97/</url>
-    <content><![CDATA[<p>&#x2F;&#x2F;git命令<br>git config –global user.name ‘你的用户名’<br>git config –global user.email ‘你的邮箱’<br>git add .<br>git status<br>git commit -m “第一次版本提交”<br>git branch<br>git checkout branchname<br>git merge branchname<br>git remote add [alias] [url]<br>git push [alias] [branch]<br>git remote rm [别名]<br>&#x2F;&#x2F;maven项目push到gitee上<br><img src="/picture/%E5%9B%BE%E7%89%871.png"><br>&#x2F;&#x2F;从gitee克隆到本地的文件<br><img src="/picture/%E5%9B%BE%E7%89%873.png"><br>&#x2F;&#x2F;maven项目中导入mybatis坐标<br><img src="/picture/%E5%9B%BE%E7%89%872.png"></p>
-]]></content>
-      <tags>
-        <tag>web前端</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hnk2022</title>
     <url>/2023/08/21/hnk2022/</url>
     <content><![CDATA[<p>[HNCTF 2022 Week1]ret2shellcode<br>1.checksec查看二进制文件<br>2.查找后门函数<br>objdump -t XXX               查看程序中使用到的函数<br>objdump -d XXX               查看程序中函数的汇编代码<br>objdump -d -M intel XXX        查看程序中函数的汇编代码，并且汇编代码是intel架构的<br>objdump -d -j .plt XXX          查看plt表<br>-j的参数有：.text  代码段<br>.const 只读数据段（有些编译器不使用此段，将只读数据并入.data段）<br>            .data  读写数据段<br>            .bss   bss段<br>3.发现read函数，存在栈溢出，s容量是256。然后将s复制到buff里，查找buff发现在bss段<br>但是文件存在nx保护。<br>4.同时有一个mprotect()函数，显示该段可以执行<br>mprotect()函数把自start开始的、长度为len的内存区的保护属性修改为prot指定的值。<br>int mprotect(const void *start, size_t len, int prot);<br>prot可以取以下几个值，并且可以用“|”将几个属性合起来使用：<br>1）PROT_READ：表示内存段内的内容可写；<br>2）PROT_WRITE：表示内存段内的内容可读；<br>3）PROT_EXEC：表示内存段中的内容可执行；<br>4）PROT_NONE：表示内存段中的内容根本没法访问。</p>
@@ -153,6 +144,15 @@
 ]]></content>
       <tags>
         <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>maven使用心得</title>
+    <url>/2023/07/08/maven%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97/</url>
+    <content><![CDATA[<p>&#x2F;&#x2F;git命令<br>git config –global user.name ‘你的用户名’<br>git config –global user.email ‘你的邮箱’<br>git add .<br>git status<br>git commit -m “第一次版本提交”<br>git branch<br>git checkout branchname<br>git merge branchname<br>git remote add [alias] [url]<br>git push [alias] [branch]<br>git remote rm [别名]<br>&#x2F;&#x2F;maven项目push到gitee上<br><img src="/picture/%E5%9B%BE%E7%89%871.png"><br>&#x2F;&#x2F;从gitee克隆到本地的文件<br><img src="/picture/%E5%9B%BE%E7%89%873.png"><br>&#x2F;&#x2F;maven项目中导入mybatis坐标<br><img src="/picture/%E5%9B%BE%E7%89%872.png"></p>
+]]></content>
+      <tags>
+        <tag>web前端</tag>
       </tags>
   </entry>
   <entry>
