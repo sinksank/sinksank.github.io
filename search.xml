@@ -134,6 +134,15 @@
       </tags>
   </entry>
   <entry>
+    <title>maven使用心得</title>
+    <url>/2023/07/08/maven%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97/</url>
+    <content><![CDATA[<p>&#x2F;&#x2F;git命令<br>git config –global user.name ‘你的用户名’<br>git config –global user.email ‘你的邮箱’<br>git add .<br>git status<br>git commit -m “第一次版本提交”<br>git branch<br>git checkout branchname<br>git merge branchname<br>git remote add [alias] [url]<br>git push [alias] [branch]<br>git remote rm [别名]<br>&#x2F;&#x2F;maven项目push到gitee上<br><img src="/picture/%E5%9B%BE%E7%89%871.png"><br>&#x2F;&#x2F;从gitee克隆到本地的文件<br><img src="/picture/%E5%9B%BE%E7%89%873.png"><br>&#x2F;&#x2F;maven项目中导入mybatis坐标<br><img src="/picture/%E5%9B%BE%E7%89%872.png"></p>
+]]></content>
+      <tags>
+        <tag>web前端</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hnk2022</title>
     <url>/2023/08/21/hnk2022/</url>
     <content><![CDATA[<p>[HNCTF 2022 Week1]ret2shellcode<br>1.checksec查看二进制文件<br>2.查找后门函数<br>objdump -t XXX               查看程序中使用到的函数<br>objdump -d XXX               查看程序中函数的汇编代码<br>objdump -d -M intel XXX        查看程序中函数的汇编代码，并且汇编代码是intel架构的<br>objdump -d -j .plt XXX          查看plt表<br>-j的参数有：.text  代码段<br>.const 只读数据段（有些编译器不使用此段，将只读数据并入.data段）<br>            .data  读写数据段<br>            .bss   bss段<br>3.发现read函数，存在栈溢出，s容量是256。然后将s复制到buff里，查找buff发现在bss段<br>但是文件存在nx保护。<br>4.同时有一个mprotect()函数，显示该段可以执行<br>mprotect()函数把自start开始的、长度为len的内存区的保护属性修改为prot指定的值。<br>int mprotect(const void *start, size_t len, int prot);<br>prot可以取以下几个值，并且可以用“|”将几个属性合起来使用：<br>1）PROT_READ：表示内存段内的内容可写；<br>2）PROT_WRITE：表示内存段内的内容可读；<br>3）PROT_EXEC：表示内存段中的内容可执行；<br>4）PROT_NONE：表示内存段中的内容根本没法访问。</p>
@@ -144,15 +153,6 @@
 ]]></content>
       <tags>
         <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>maven使用心得</title>
-    <url>/2023/07/08/maven%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97/</url>
-    <content><![CDATA[<p>&#x2F;&#x2F;git命令<br>git config –global user.name ‘你的用户名’<br>git config –global user.email ‘你的邮箱’<br>git add .<br>git status<br>git commit -m “第一次版本提交”<br>git branch<br>git checkout branchname<br>git merge branchname<br>git remote add [alias] [url]<br>git push [alias] [branch]<br>git remote rm [别名]<br>&#x2F;&#x2F;maven项目push到gitee上<br><img src="/picture/%E5%9B%BE%E7%89%871.png"><br>&#x2F;&#x2F;从gitee克隆到本地的文件<br><img src="/picture/%E5%9B%BE%E7%89%873.png"><br>&#x2F;&#x2F;maven项目中导入mybatis坐标<br><img src="/picture/%E5%9B%BE%E7%89%872.png"></p>
-]]></content>
-      <tags>
-        <tag>web前端</tag>
       </tags>
   </entry>
   <entry>
@@ -184,6 +184,18 @@
       </tags>
   </entry>
   <entry>
+    <title>python</title>
+    <url>/2023/06/25/python%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>Unix shell，通常被称作“命令行”，为Unix和类Unix操作系统提供了传统的用户界面。用户通过输入shell所执行的命令，引导计算机的操作。在微软Windows操作系统平台，类似程序是command.com，或者基于Windows NT内核操作系统的cmd.exe。<br>解释器有些像Unix shell：当调用时使用连接到一个tty设备作为标准输入，它交互地读取并执行命令；当用文件名参数或文件作为标准输入调用，它将读取并执行该文件中的脚本。<br>变量类型：字符串、字符<br>列表（修改，添加，删除）:举例<br> squares &#x3D; [1, 4, 9, 16, 25]<br> squares<br>[1, 4, 9, 16, 25]<br>列表可以嵌套<br>If语句<br> x &#x3D; int(raw_input(“Please enter an integer: “))<br>Please enter an integer: 42<br> if x &lt; 0:<br>… x &#x3D; 0<br>… print ‘Negative changed to zero’<br>… elif x &#x3D;&#x3D; 0:<br>… print ‘Zero’<br>… elif x &#x3D;&#x3D; 1:<br>… print ‘Single’<br>… else:<br>… print ‘More’<br>while语句（break.continue<br>）<br> a, b &#x3D; 0, 1<br> while b &lt; 1000:<br>… print b,<br>… a, b &#x3D; b, a+b<br>1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987<br>for语句<br>  Measure some strings:<br>… words &#x3D; [‘cat’, ‘window’, ‘defenestrate’]<br> for w in words:<br>… print w, len(w)<br>…<br>cat 3<br>window 6<br>defenestrate 12<br>元组：元组在输出时总是有括号的，以便于正确表达嵌套结构；在输入时可以有也可以<br>没有括号，不过括号经常都是必须的（如果元组是一个更大的表达式的一部分）。<br>集合：<br> basket &#x3D; [‘apple’, ‘orange’, ‘apple’, ‘pear’, ‘orange’, ‘banana’]<br> fruit &#x3D; set(basket) # create a set without duplicates<br> fruit<br>set([‘orange’, ‘pear’, ‘apple’, ‘banana’])<br> ‘orange’ in fruit # fast membership testing<br>True<br> ‘crabgrass’ in fruit<br>False<br>  Demonstrate set operations on unique letters from two words<br>…<br> a &#x3D; set(‘abracadabra’)<br> b &#x3D; set(‘alacazam’)<br> a # unique letters in a<br>set([‘a’, ‘r’, ‘b’, ‘c’, ‘d’])<br> a - b # letters in a but not in b<br>set([‘r’, ‘d’, ‘b’])<br> a | b # letters in either a or b<br>set([‘a’, ‘c’, ‘r’, ‘d’, ‘b’, ‘m’, ‘z’, ‘l’])<br> a &amp; b # letters in both a and b<br>set([‘a’, ‘c’])<br> a ^ b # letters in a or b but not both<br>set([‘r’, ‘d’, ‘b’, ‘m’, ‘z’, ‘l’])<br>推导式<br>字典<br> tel &#x3D; {‘jack’: 4098, ‘sape’: 4139}<br> tel[‘guido’] &#x3D; 4127<br> tel<br>{‘sape’: 4139, ‘guido’: 4127, ‘jack’: 4098}<br> tel[‘jack’]<br>4098<br> del tel[‘sape’]<br> tel[‘irv’] &#x3D; 4127<br> tel<br>{‘guido’: 4127, ‘irv’: 4127, ‘jack’: 4098}<br> tel.keys()<br>[‘guido’, ‘irv’, ‘jack’]<br> ‘guido’ in tel<br>True<br>模块<br> from fibo import fib, fib2<br> fib(500)<br>1 1 2 3 5 8 13 21 34 55 89 144 233 377<br>读写文件<br>处理异常<br>测试代码<br>类<br>类的定义就像函数定义（def语句），要先执行才能生效。(你当然可以把它放进if语句的某一分支，或者一个函数的内部。)实际应用中，类定义包含的语句通常是函数定义，不过其它语句也是可以的而且有时还会很有用——后面我们会再回来讨论。类中的函数定义通常有一个特殊形式的参数列表，这是由方法调用的协议决定的——同样后面会解释这些。进入类定义部分后，会创建出一个新的命名空间，作为局部作用域——因此，所有的赋值成为这个新命名空间的局部变量。特别是这里的函数定义会绑定新函数的名字。类定义正常结束时，一个类对象也就创建了。基本上它是对类定义创建的命名空间进行了一个包装；我们在下一节将进一步学习类对象的知识。原始的局部作用域（类定义引入之前生效的那个）得到恢复，类对象在这里绑定到类定义头部的类名（例子中是ClassName）。</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>code</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python2</title>
     <url>/2023/06/26/python%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%932/</url>
     <content><![CDATA[<p>#类<br>class Student:<br>  native_pace &#x3D;”吉林” #直接写在类里面的变量成为类属性 </p>
@@ -194,18 +206,6 @@
 <p>def show()<br>  print(“定义在类之外的，称为函数”)</p>
 <p>为stu1动态绑定方法<br>stu1.show &#x3D; show</p>
 <p>为stu1动态绑定性别<br>stu1&#x3D;Student(“Jack”,20)<br>stu1.gender&#x3D;”男”</p>
-]]></content>
-      <categories>
-        <category>code</category>
-      </categories>
-      <tags>
-        <tag>code</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python</title>
-    <url>/2023/06/25/python%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>Unix shell，通常被称作“命令行”，为Unix和类Unix操作系统提供了传统的用户界面。用户通过输入shell所执行的命令，引导计算机的操作。在微软Windows操作系统平台，类似程序是command.com，或者基于Windows NT内核操作系统的cmd.exe。<br>解释器有些像Unix shell：当调用时使用连接到一个tty设备作为标准输入，它交互地读取并执行命令；当用文件名参数或文件作为标准输入调用，它将读取并执行该文件中的脚本。<br>变量类型：字符串、字符<br>列表（修改，添加，删除）:举例<br> squares &#x3D; [1, 4, 9, 16, 25]<br> squares<br>[1, 4, 9, 16, 25]<br>列表可以嵌套<br>If语句<br> x &#x3D; int(raw_input(“Please enter an integer: “))<br>Please enter an integer: 42<br> if x &lt; 0:<br>… x &#x3D; 0<br>… print ‘Negative changed to zero’<br>… elif x &#x3D;&#x3D; 0:<br>… print ‘Zero’<br>… elif x &#x3D;&#x3D; 1:<br>… print ‘Single’<br>… else:<br>… print ‘More’<br>while语句（break.continue<br>）<br> a, b &#x3D; 0, 1<br> while b &lt; 1000:<br>… print b,<br>… a, b &#x3D; b, a+b<br>1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987<br>for语句<br>  Measure some strings:<br>… words &#x3D; [‘cat’, ‘window’, ‘defenestrate’]<br> for w in words:<br>… print w, len(w)<br>…<br>cat 3<br>window 6<br>defenestrate 12<br>元组：元组在输出时总是有括号的，以便于正确表达嵌套结构；在输入时可以有也可以<br>没有括号，不过括号经常都是必须的（如果元组是一个更大的表达式的一部分）。<br>集合：<br> basket &#x3D; [‘apple’, ‘orange’, ‘apple’, ‘pear’, ‘orange’, ‘banana’]<br> fruit &#x3D; set(basket) # create a set without duplicates<br> fruit<br>set([‘orange’, ‘pear’, ‘apple’, ‘banana’])<br> ‘orange’ in fruit # fast membership testing<br>True<br> ‘crabgrass’ in fruit<br>False<br>  Demonstrate set operations on unique letters from two words<br>…<br> a &#x3D; set(‘abracadabra’)<br> b &#x3D; set(‘alacazam’)<br> a # unique letters in a<br>set([‘a’, ‘r’, ‘b’, ‘c’, ‘d’])<br> a - b # letters in a but not in b<br>set([‘r’, ‘d’, ‘b’])<br> a | b # letters in either a or b<br>set([‘a’, ‘c’, ‘r’, ‘d’, ‘b’, ‘m’, ‘z’, ‘l’])<br> a &amp; b # letters in both a and b<br>set([‘a’, ‘c’])<br> a ^ b # letters in a or b but not both<br>set([‘r’, ‘d’, ‘b’, ‘m’, ‘z’, ‘l’])<br>推导式<br>字典<br> tel &#x3D; {‘jack’: 4098, ‘sape’: 4139}<br> tel[‘guido’] &#x3D; 4127<br> tel<br>{‘sape’: 4139, ‘guido’: 4127, ‘jack’: 4098}<br> tel[‘jack’]<br>4098<br> del tel[‘sape’]<br> tel[‘irv’] &#x3D; 4127<br> tel<br>{‘guido’: 4127, ‘irv’: 4127, ‘jack’: 4098}<br> tel.keys()<br>[‘guido’, ‘irv’, ‘jack’]<br> ‘guido’ in tel<br>True<br>模块<br> from fibo import fib, fib2<br> fib(500)<br>1 1 2 3 5 8 13 21 34 55 89 144 233 377<br>读写文件<br>处理异常<br>测试代码<br>类<br>类的定义就像函数定义（def语句），要先执行才能生效。(你当然可以把它放进if语句的某一分支，或者一个函数的内部。)实际应用中，类定义包含的语句通常是函数定义，不过其它语句也是可以的而且有时还会很有用——后面我们会再回来讨论。类中的函数定义通常有一个特殊形式的参数列表，这是由方法调用的协议决定的——同样后面会解释这些。进入类定义部分后，会创建出一个新的命名空间，作为局部作用域——因此，所有的赋值成为这个新命名空间的局部变量。特别是这里的函数定义会绑定新函数的名字。类定义正常结束时，一个类对象也就创建了。基本上它是对类定义创建的命名空间进行了一个包装；我们在下一节将进一步学习类对象的知识。原始的局部作用域（类定义引入之前生效的那个）得到恢复，类对象在这里绑定到类定义头部的类名（例子中是ClassName）。</p>
 ]]></content>
       <categories>
         <category>code</category>
