@@ -278,23 +278,6 @@
       </tags>
   </entry>
   <entry>
-    <title>数据结构代码</title>
-    <url>/2023/06/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<p>include&lt;stdio.h&gt;<br>include&lt;stdlib.h&gt;<br>define SIZE 100;<br>typedef struct sqstack{<br>    int *base;<br>    int *top;<br>    int stacksize;<br>}sqstack1;<br>int intstack(sqstack1 &amp;s){<br>    s.base &#x3D; (int *)malloc(100 * sizeof(int));<br>    if(!s.base)exit(0);<br>    s.top&#x3D;s.base;<br>    s.stacksize&#x3D;100;<br>    return 1;<br>}<br>void push(sqstack1 &amp;s,int e){<br>    if(s.top-s.base&gt;&#x3D;s.stacksize){<br>        s.base &#x3D; (int * )realloc(s.base,(s.stacksize+10) * sizeof(int));<br>        if(!s.base)exit(0);<br>        s.top &#x3D; s.base+s.stacksize;<br>        s.stacksize+&#x3D;10;<br>    }	<br>    <em>s.top++ &#x3D; e;<br>}<br>int pop(sqstack1 s,int e){<br>    if(s.top&#x3D;&#x3D;s.base)return 0;<br>    e&#x3D;</em>–s.top;<br>    return 1;<br>}<br>int main(){<br>    sqstack1 s;int e;<br>    intstack(s);<br>    scanf(“%d”,&amp;e);<br>    push(s,e); </p>
-<pre><code>printf(&quot;%d&quot;,s.top);
-
-return 0;
-</code></pre>
-<p>}</p>
-]]></content>
-      <categories>
-        <category>code</category>
-      </categories>
-      <tags>
-        <tag>code</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数据库</title>
     <url>/2024/01/01/%E6%95%B0%E6%8D%AE%E5%BA%93/</url>
     <content><![CDATA[<p>根据输入变量deptcode，编写代码块来获得雇员人数。</p>
@@ -440,6 +423,96 @@ call sp_update_sal();
 select Comm from emp;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
       <tags>
         <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据库作业整理</title>
+    <url>/2024/01/02/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%9C%E4%B8%9A%E6%95%B4%E7%90%86/</url>
+    <content><![CDATA[<p>设计一个行触发器:当DEPT表中deptno列的值被更新时，EMP表中相应的deptno值也被修改。</p>
+<pre class="line-numbers language-none"><code class="language-none">drop trigger if exists update_emp_deptno;
+delimiter &#x2F;&#x2F;
+create trigger update_emp_deptno
+before update on dept
+for each row
+begin
+update emp set deptno&#x3D;new.deptno where deptno&#x3D;old.deptno;
+end
+&#x2F;&#x2F;
+delimiter ;
+update dept
+ set deptno&#x3D;6
+ where deptno&#x3D;1;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>设计一个行触发器用于emp表的更新，当修改员工的工资sal时候触发更新所在部门的工资总和(首先在dept表中添加一个sumsalary coulmn)。</p>
+<pre class="line-numbers language-none"><code class="language-none">select sumsalary from dept where deptno&#x3D;1;
+drop trigger if exists update_deptno_sal;
+delimiter &#x2F;&#x2F;
+create trigger update_deptno_sal
+before update on emp
+for each row
+begin 
+update dept 
+set sumsalary&#x3D;(select sum(Sal) from emp where deptno &#x3D; new.deptno) 
+where deptno &#x3D; new.deptno;
+end
+&#x2F;&#x2F;
+delimiter ;
+update emp
+set Sal&#x3D;2000
+where empno&#x3D;1;
+select sumsalary from dept where deptno&#x3D;1;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>创建触发器:当emp表中删除或插入一些记录时，将每个员工所在部门的最新人数写入dept表(首先向dept表添加一个person coulmn)。</p>
+<pre class="line-numbers language-none"><code class="language-none">select persons from dept where deptno&#x3D;1;
+drop trigger if exists insert_emp_person;
+drop trigger if exists delete_emp_person;
+delimiter &#x2F;&#x2F;
+create trigger insert_emp_person
+after insert on emp 
+for each row
+begin
+update dept 
+set persons&#x3D;(select count(*) from emp where deptno &#x3D; new.deptno) 
+where deptno &#x3D; new.deptno;
+end
+&#x2F;&#x2F;
+delimiter ;
+
+delimiter &#x2F;&#x2F;
+create trigger delete_emp_person
+after delete on emp 
+for each row
+begin
+update dept 
+set persons&#x3D;(select count(*) from emp where deptno &#x3D; old.deptno) 
+where deptno &#x3D; old.deptno;
+end
+&#x2F;&#x2F;
+delimiter ;
+
+INSERT INTO emp (empno, ename, Job, Mgr, Hiredate, Sal, Comm, deptno)
+VALUES (50, &#39;sin&#39;, &#39;manager&#39;, 100, &#39;2024-01-02 12:00:00&#39;, 50000.00, 2000.00, 1);
+
+delete from emp where empno&#x3D;50;
+select persons from dept where deptno&#x3D;1;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <tags>
+        <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据结构代码</title>
+    <url>/2023/06/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>include&lt;stdio.h&gt;<br>include&lt;stdlib.h&gt;<br>define SIZE 100;<br>typedef struct sqstack{<br>    int *base;<br>    int *top;<br>    int stacksize;<br>}sqstack1;<br>int intstack(sqstack1 &amp;s){<br>    s.base &#x3D; (int *)malloc(100 * sizeof(int));<br>    if(!s.base)exit(0);<br>    s.top&#x3D;s.base;<br>    s.stacksize&#x3D;100;<br>    return 1;<br>}<br>void push(sqstack1 &amp;s,int e){<br>    if(s.top-s.base&gt;&#x3D;s.stacksize){<br>        s.base &#x3D; (int * )realloc(s.base,(s.stacksize+10) * sizeof(int));<br>        if(!s.base)exit(0);<br>        s.top &#x3D; s.base+s.stacksize;<br>        s.stacksize+&#x3D;10;<br>    }	<br>    <em>s.top++ &#x3D; e;<br>}<br>int pop(sqstack1 s,int e){<br>    if(s.top&#x3D;&#x3D;s.base)return 0;<br>    e&#x3D;</em>–s.top;<br>    return 1;<br>}<br>int main(){<br>    sqstack1 s;int e;<br>    intstack(s);<br>    scanf(“%d”,&amp;e);<br>    push(s,e); </p>
+<pre><code>printf(&quot;%d&quot;,s.top);
+
+return 0;
+</code></pre>
+<p>}</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>code</tag>
       </tags>
   </entry>
   <entry>
